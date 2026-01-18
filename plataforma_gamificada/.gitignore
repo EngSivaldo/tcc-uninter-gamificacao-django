@@ -1,0 +1,24 @@
+# Ambiente Virtual (NUNCA envie a pasta venv)
+venv/
+ENV/
+env/
+
+# Python (Arquivos temporários de compilação)
+**/__pycache__/
+*.py[cod]
+*$py.class
+
+# Banco de Dados Local (Caso o SQLite tenha sido criado)
+*.sqlite3
+
+# Configurações sensíveis (Variáveis de ambiente)
+.env
+
+# Pastas de ambiente de desenvolvimento
+.vscode/
+.idea/
+
+# Arquivos de log e sistema
+*.log
+.DS_Store
+Thumbs.db
