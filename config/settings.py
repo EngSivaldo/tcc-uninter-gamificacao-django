@@ -10,7 +10,10 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 import os
+import sys  # <-- ADICIONE ESTA LINHA AQUI
+from pathlib import Path
 from dotenv import load_dotenv
+
 load_dotenv()
 
 # Exemplo de como usar:
@@ -21,6 +24,9 @@ from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Adiciona a pasta 'apps' ao caminho de busca do Python (isso resolve o erro)
+sys.path.insert(0, os.path.join(BASE_DIR, 'apps'))
 
 
 # Quick-start development settings - unsuitable for production
@@ -44,6 +50,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # ... apps padrão do django ...
+    'accounts',
+    'gamification',
 ]
 
 MIDDLEWARE = [
@@ -135,3 +144,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
+# Indica que o Django deve usar o seu modelo de usuário que terá o campo RU
+AUTH_USER_MODEL = 'accounts.User'
