@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="space-y-6">
+    <div class="bg-white rounded-xl shadow-sm p-6 border border-slate-200">
+        <h1 class="text-2xl font-bold text-slate-800">Painel do Estudante</h1>
+        <p class="text-slate-500">Visualize seu desempenho e metas de aprendizagem.</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        
+        <div class="bg-white rounded-xl shadow-sm p-6 border-t-4 border-blue-600">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-xs font-bold text-slate-400 uppercase">Identificação Acadêmica</h3>
+                <i class="fas fa-id-card text-blue-600 text-xl"></i>
+            </div>
+            <p class="text-lg font-bold text-slate-800">{{ user.get_full_name|title|default:user.username|title }}</p>
+            <p class="text-sm text-blue-700 font-mono font-bold mt-1">RU: {{ user.ru }}</p>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-sm p-6 border-t-4 border-yellow-500">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-xs font-bold text-slate-400 uppercase">Pontos de Experiência</h3>
+                <i class="fas fa-fire text-yellow-500 text-xl"></i>
+            </div>
+            <div class="flex items-baseline gap-2">
+                <span class="text-4xl font-black text-slate-800">{{ total_points }}</span>
+                <span class="text-yellow-600 font-bold">XP</span>
+            </div>
+            <div class="w-full bg-slate-100 h-2 rounded-full mt-4">
+              <div class="bg-yellow-500 h-2 rounded-full" style="width: {{ progress }}%"></div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-sm p-6 border-t-4 border-emerald-500">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-xs font-bold text-slate-400 uppercase">Conquistas Atuais</h3>
+                <i class="fas fa-award text-emerald-500 text-xl"></i>
+            </div>
+            <p class="text-sm text-slate-400 italic">Explore a trilha de conhecimento para desbloquear medalhas.</p>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

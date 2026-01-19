@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # ... apps padrão do django ...
+    'django_extensions',
     'accounts',
     'gamification',
 ]
@@ -70,7 +71,7 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')], 
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -130,10 +131,8 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
-
-LANGUAGE_CODE = 'en-us'
-
-TIME_ZONE = 'UTC'
+LANGUAGE_CODE = 'pt-br' # Mude de 'en-us'
+TIME_ZONE = 'America/Sao_Paulo' # Mude de 'UTC'
 
 USE_I18N = True
 
@@ -147,3 +146,9 @@ STATIC_URL = 'static/'
 
 # Indica que o Django deve usar o seu modelo de usuário que terá o campo RU
 AUTH_USER_MODEL = 'accounts.User'
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+
+# Adicione o prefixo 'accounts:' antes do nome da rota
+LOGIN_URL = 'accounts:login'
+LOGIN_REDIRECT_URL = 'accounts:dashboard'
+LOGOUT_REDIRECT_URL = 'accounts:login'
