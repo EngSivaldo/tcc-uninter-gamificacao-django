@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto space-y-8">
+    <div class="text-center md:text-left">
+        <h1 class="text-3xl font-bold text-slate-800 flex items-center gap-3">
+            <i class="fas fa-map-signs text-blue-700"></i>
+            Trilhas de Aprendizado
+        </h1>
+        <p class="text-slate-500 mt-2 text-lg">Escolha uma matéria para começar a acumular XP e conquistar medalhas.</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {% for trail in trails %}
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-xl transition-all group border-b-4 border-b-blue-700">
+            <div class="p-8">
+                <div class="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center mb-6 group-hover:bg-blue-700 transition-colors">
+                    <i class="fas fa-graduation-cap text-blue-700 group-hover:text-white text-xl"></i>
+                </div>
+                
+                <h2 class="text-xl font-bold text-slate-800 mb-3">{{ trail.title }}</h2>
+                <p class="text-slate-500 text-sm line-clamp-3 mb-6">
+                    {{ trail.description }}
+                </p>
+
+                <div class="flex items-center justify-between pt-6 border-t border-slate-100">
+                    <span class="text-xs font-bold text-slate-400 uppercase tracking-tighter">
+                        <i class="fas fa-layer-group mr-1"></i> {{ trail.chapters.count }} Unidades
+                    </span>
+                    <a href="{% url 'gamification:trail_detail' trail.id %}" class="inline-flex items-center text-blue-700 font-bold text-sm hover:underline group">
+                        Acessar Trilha 
+                        <i class="fas fa-arrow-right ml-2 transition-transform group-hover:translate-x-1"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-span-full text-center py-20 bg-white rounded-2xl border-2 border-dashed border-slate-200">
+            <i class="fas fa-folder-open text-4xl text-slate-300 mb-4"></i>
+            <p class="text-slate-500">Ainda não cadastraste nenhuma trilha no Painel Admin.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

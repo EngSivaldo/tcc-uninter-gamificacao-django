@@ -16,11 +16,15 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from django.views.generic import RedirectView # Importe isto
+from django.views.generic import RedirectView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('accounts/', include('accounts.urls')), # Conecta o app accounts
-    # Redireciona a página inicial (vazia) para a dashboard
-    path('', RedirectView.as_view(url='/accounts/dashboard/'), name='home'),
+    
+    # Roteamento dos Apps
+    path('accounts/', include('accounts.urls')),
+    path('gamification/', include('gamification.urls')),
+
+    # Redirecionamento da Raiz para a Dashboard
+    path('', RedirectView.as_view(pattern_name='accounts:dashboard'), name='home'),
 ]

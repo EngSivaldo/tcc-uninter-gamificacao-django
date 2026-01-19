@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto space-y-6">
+    <div class="bg-white rounded-2xl shadow-sm p-8 border border-slate-200 border-l-8 border-l-blue-800">
+        <h1 class="text-3xl font-bold text-slate-800">{{ trail.title }}</h1>
+        <p class="text-slate-600 mt-2">{{ trail.description }}</p>
+    </div>
+
+    <div class="space-y-4">
+        <h2 class="text-xl font-bold text-slate-700 flex items-center gap-2">
+            <i class="fas fa-stream text-blue-600"></i> Conteúdo Programático
+        </h2>
+
+        {% for chapter in trail.chapters.all %}
+        <div class="bg-white p-5 rounded-xl border border-slate-200 flex justify-between items-center hover:shadow-md transition-shadow group">
+            <div class="flex items-center gap-4">
+                <div class="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center font-bold text-slate-500 group-hover:bg-blue-100 group-hover:text-blue-700 transition-colors">
+                    {{ chapter.order }}
+                </div>
+                <div>
+                    <h3 class="font-bold text-slate-800">{{ chapter.title }}</h3>
+                    <p class="text-xs text-emerald-600 font-bold uppercase"><i class="fas fa-star mr-1"></i> Vale {{ chapter.xp_value }} XP</p>
+                </div>
+            </div>
+            
+            <a href="{% url 'gamification:chapter_detail' chapter.id %}" 
+               class="bg-slate-800 hover:bg-blue-700 text-white text-sm font-bold py-2 px-5 rounded-lg transition-colors flex items-center gap-2">
+                Acessar Aula <i class="fas fa-chevron-right text-[10px]"></i>
+            </a>
+        </div>
+        {% empty %}
+        <p class="text-center text-slate-400 italic">Nenhum capítulo cadastrado.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
