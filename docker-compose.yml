@@ -1,0 +1,30 @@
+services:
+  db:
+    image: postgres:15
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=plataforma_gamificada
+      - POSTGRES_USER=sivaldo
+      - POSTGRES_PASSWORD=uninter123 # <--- AGORA ESTÁ IGUAL AO .ENV
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sivaldo -d plataforma_gamificada"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  web:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  postgres_data:

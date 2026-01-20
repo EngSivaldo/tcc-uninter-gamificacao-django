@@ -1,24 +1,29 @@
-# Ambiente Virtual (NUNCA envie a pasta venv)
+# --- AMBIENTE VIRTUAL E PYTHON ---
 venv/
-ENV/
+.venv/
 env/
-
-# Python (Arquivos temporários de compilação)
 **/__pycache__/
 *.py[cod]
 *$py.class
 
-# Banco de Dados Local (Caso o SQLite tenha sido criado)
-*.sqlite3
+# --- DOCKER E BANCO DE DADOS (Adicione estas linhas!) ---
+# Ignora a pasta de dados persistentes do PostgreSQL
+postgres_data/
 
-# Configurações sensíveis (Variáveis de ambiente)
+# Ignora qualquer arquivo de configuração de ambiente local
 .env
 
-# Pastas de ambiente de desenvolvimento
+# --- ARQUIVOS DE MÍDIA E ESTÁTICOS ---
+# (Opcional) Se você não quiser subir fotos enviadas por usuários
+# media/
+
+# --- BANCO DE DADOS ANTIGO (SQLite) ---
+*.sqlite3
+*.sqlite3-journal
+
+# --- IDEs E SISTEMA ---
 .vscode/
 .idea/
-
-# Arquivos de log e sistema
 *.log
 .DS_Store
 Thumbs.db
