@@ -24,8 +24,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     
     # Roteamento dos Apps
-    path('accounts/', include('accounts.urls')),
-    path('gamification/', include('gamification.urls')),
+    path('accounts/', include('apps.accounts.urls')),
+    path('gamification/', include('apps.gamification.urls')),
 
     # Redirecionamento da Raiz para a Dashboard
     path('', RedirectView.as_view(pattern_name='accounts:dashboard'), name='home'),

@@ -52,8 +52,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # ... apps padrão do django ...
     'django_extensions',
-    'accounts',
-    'gamification',
+    'apps.accounts',
+    'apps.gamification',
 ]
 
 MIDDLEWARE = [
