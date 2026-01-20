@@ -1,7 +1,8 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="space-y-6">
+<div x-data="{ open: false, selectedMedal: {} }" class="space-y-6">
+    
     <div class="bg-white rounded-xl shadow-sm p-6 border border-slate-200">
         <h1 class="text-2xl font-bold text-slate-800">Painel do Estudante</h1>
         <p class="text-slate-500">Visualize seu desempenho e metas de aprendizagem.</p>
@@ -28,18 +29,81 @@
                 <span class="text-yellow-600 font-bold">XP</span>
             </div>
             <div class="w-full bg-slate-100 h-2 rounded-full mt-4">
-              <div class="bg-yellow-500 h-2 rounded-full" style="width: {{ progress }}%"></div>
+              <div class="bg-yellow-500 h-2 rounded-full transition-all duration-500" style="width: {{ progress }}%"></div>
             </div>
         </div>
 
         <div class="bg-white rounded-xl shadow-sm p-6 border-t-4 border-emerald-500">
             <div class="flex items-center justify-between mb-4">
-                <h3 class="text-xs font-bold text-slate-400 uppercase">Conquistas Atuais</h3>
+                <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Conquistas Atuais</h3>
                 <i class="fas fa-award text-emerald-500 text-xl"></i>
             </div>
-            <p class="text-sm text-slate-400 italic">Explore a trilha de conhecimento para desbloquear medalhas.</p>
+            
+            <div class="grid grid-cols-4 gap-2">
+                {% for conquista in conquistas %}
+                    <button @click="open = true; selectedMedal = { 
+                                name: '{{ conquista.medal.name|escapejs }}', 
+                                desc: '{{ conquista.medal.description|escapejs }}', 
+                                date: '{{ conquista.earned_at|date:'d/m/Y' }}',
+                                icon: '{% if conquista.medal.icon %}{{ conquista.medal.icon.url }}{% endif %}'
+                             }" 
+                             class="flex flex-col items-center group cursor-pointer p-1 rounded-lg hover:bg-slate-50 transition-colors">
+                        
+                        {% if conquista.medal.icon %}
+                            <img src="{{ conquista.medal.icon.url }}" alt="{{ conquista.medal.name }}" 
+                                 class="w-10 h-10 object-contain filter drop-shadow-sm group-hover:scale-110 transition-transform">
+                        {% else %}
+                            <div class="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center text-yellow-600">
+                                <i class="fas fa-medal text-lg"></i>
+                            </div>
+                        {% endif %}
+                        <span class="text-[8px] font-bold text-slate-600 mt-1 text-center leading-tight truncate w-full">
+                            {{ conquista.medal.name }}
+                        </span>
+                    </button>
+                {% empty %}
+                    <p class="col-span-4 text-slate-400 text-[10px] italic leading-tight">
+                        Explore a trilha de conhecimento para desbloquear medalhas.
+                    </p>
+                {% endfor %}
+            </div>
         </div>
+    </div>
 
+    <div x-show="open" 
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0 scale-90"
+         x-transition:enter-end="opacity-100 scale-100"
+         class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm"
+         style="display: none;"> <div @click.away="open = false" 
+             class="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-8 text-center relative">
+            
+            <button @click="open = false" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
+                <i class="fas fa-times"></i>
+            </button>
+
+            <template x-if="selectedMedal.icon">
+                <img :src="selectedMedal.icon" class="w-24 h-24 mx-auto mb-4 drop-shadow-lg">
+            </template>
+            <template x-if="!selectedMedal.icon">
+                <div class="w-24 h-24 bg-yellow-100 rounded-full flex items-center justify-center text-yellow-600 mx-auto mb-4">
+                    <i class="fas fa-award text-4xl"></i>
+                </div>
+            </template>
+            
+            <h2 class="text-2xl font-black text-slate-800 mb-2" x-text="selectedMedal.name"></h2>
+            
+            <div class="bg-emerald-50 text-emerald-700 text-xs font-bold px-3 py-1 rounded-full inline-block mb-4">
+                Conquistada em <span x-text="selectedMedal.date"></span>
+            </div>
+
+            <p class="text-slate-600 text-sm leading-relaxed mb-6" x-text="selectedMedal.desc"></p>
+
+            <button @click="open = false" 
+                    class="w-full bg-slate-800 text-white font-bold py-3 rounded-xl hover:bg-slate-700 transition-colors">
+                Entendido!
+            </button>
+        </div>
     </div>
 </div>
 {% endblock %}

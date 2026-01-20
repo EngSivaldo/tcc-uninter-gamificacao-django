@@ -64,14 +64,23 @@ class Chapter(models.Model):
         return f"{self.trail.title} - {self.title}"
     
     
+# apps/gamification/models.py
+
 class UserMedal(models.Model):
-    """Registra o momento em que um aluno conquista uma medalha específica."""
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='earned_medals')
+    """Tabela intermediária que registra a conquista de uma medalha por um usuário[cite: 44]."""
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, 
+        on_delete=models.CASCADE, 
+        related_name='earned_medals'
+    )
     medal = models.ForeignKey(Medal, on_delete=models.CASCADE)
-    earned_at = models.DateTimeField(auto_now_add=True)
+    earned_at = models.DateTimeField(auto_now_add=True, verbose_name="Data da Conquista")
 
     class Meta:
-        unique_together = ('user', 'medal') # Impede que o aluno ganhe a mesma medalha duas vezes
+        # RNF01: Garante que o usuário não ganhe a mesma medalha duas vezes
+        unique_together = ('user', 'medal')
+        verbose_name = "Medalha do Usuário"
+        verbose_name_plural = "Medalhas dos Usuários"
 
     def __str__(self):
-        return f"{self.user.username} conquistou {self.medal.name}"
+        return f"{self.user.username} - {self.medal.name}"

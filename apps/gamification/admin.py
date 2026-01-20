@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Medal, Trail, Chapter, PointTransaction
+from .models import Medal, Trail, Chapter, PointTransaction,UserMedal
 
 # 1. Configuração Inline (Sênior): Permite editar capítulos dentro da trilha
 class ChapterInline(admin.TabularInline):
@@ -35,3 +35,11 @@ class PointTransactionAdmin(admin.ModelAdmin):
     list_filter = ('user', 'created_at')
     search_fields = ('user__username', 'description')
     readonly_fields = ('created_at',) # Impede alteração da data de ganho
+    
+# No final do seu apps/gamification/admin.py
+
+@admin.register(UserMedal)
+class UserMedalAdmin(admin.ModelAdmin):
+    list_display = ('user', 'medal', 'earned_at')
+    list_filter = ('user', 'medal')
+    readonly_fields = ('earned_at',)
