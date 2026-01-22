@@ -1,17 +1,35 @@
 from django.contrib import admin
-from .models import Medal, Trail, Chapter, PointTransaction,UserMedal
+from .models import Medal, Trail, Chapter, PointTransaction, UserMedal
+from .services import gerar_conteudo_aula
 
-# 1. Configuração Inline (Sênior): Permite editar capítulos dentro da trilha
+# --- ADMIN ACTIONS (Inteligência Artificial) ---
+
+@admin.action(description="Gerar conteúdo inteligente via IA")
+def automatizar_conteudo(modeladmin, request, queryset):
+    """
+    Ação sênior: Processa os capítulos selecionados e preenche o campo 
+    'content' usando Processamento de Linguagem Natural (LLM).
+    """
+    for chapter in queryset:
+        # Chamada ao serviço do Gemini passando o título da aula
+        conteudo_gerado = gerar_conteudo_aula(chapter.title)
+        chapter.content = conteudo_gerado
+        chapter.save()
+
+# --- CONFIGURAÇÕES INLINE ---
+
 class ChapterInline(admin.TabularInline):
     model = Chapter
-    extra = 1 # Mostra um espaço vazio para nova aula por padrão
-    fields = ('order', 'title', 'xp_value') # Campos simplificados para o inline
+    extra = 1
+    fields = ('order', 'title', 'xp_value')
+
+# --- REGISTROS DOS MODELOS ---
 
 @admin.register(Trail)
 class TrailAdmin(admin.ModelAdmin):
     list_display = ('title', 'created_at', 'get_chapter_count')
     search_fields = ('title',)
-    inlines = [ChapterInline] # Adiciona a gestão de capítulos aqui dentro
+    inlines = [ChapterInline]
 
     def get_chapter_count(self, obj):
         return obj.chapters.count()
@@ -22,7 +40,9 @@ class ChapterAdmin(admin.ModelAdmin):
     list_display = ('title', 'trail', 'xp_value', 'order')
     list_filter = ('trail',)
     search_fields = ('title', 'content')
-    list_editable = ('order', 'xp_value') # Permite editar a ordem direto na lista
+    list_editable = ('order', 'xp_value')
+    # Integração da nova funcionalidade de IA
+    actions = [automatizar_conteudo] 
 
 @admin.register(Medal)
 class MedalAdmin(admin.ModelAdmin):
@@ -34,9 +54,7 @@ class PointTransactionAdmin(admin.ModelAdmin):
     list_display = ('user', 'quantity', 'description', 'created_at')
     list_filter = ('user', 'created_at')
     search_fields = ('user__username', 'description')
-    readonly_fields = ('created_at',) # Impede alteração da data de ganho
-    
-# No final do seu apps/gamification/admin.py
+    readonly_fields = ('created_at',)
 
 @admin.register(UserMedal)
 class UserMedalAdmin(admin.ModelAdmin):

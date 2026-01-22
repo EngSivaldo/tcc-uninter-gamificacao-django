@@ -1,59 +1,87 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="max-w-4xl mx-auto" x-data="{ tab: 'video' }"> <div class="mb-6 flex justify-between items-end">
+<div class="max-w-4xl mx-auto" x-data="{ tab: 'video' }"> 
+    <div class="mb-6 flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
         <div>
-            <a href="{% url 'gamification:trail_detail' chapter.trail.id %}" class="text-slate-500 hover:text-blue-700 font-medium text-sm flex items-center gap-2 mb-2">
-                <i class="fas fa-arrow-left"></i> Voltar ao Índice
+            <a href="{% url 'gamification:trail_detail' chapter.trail.id %}" 
+               class="text-slate-500 hover:text-blue-700 font-medium text-sm transition-colors flex items-center gap-2 mb-2">
+                <i class="fas fa-arrow-left"></i> Voltar ao Índice da Trilha
             </a>
-            <h1 class="text-2xl font-bold text-slate-800">{{ chapter.title }}</h1>
+            <h1 class="text-3xl font-black text-slate-800 tracking-tight">{{ chapter.title }}</h1>
         </div>
         
-        <div class="flex bg-slate-200 p-1 rounded-xl shadow-inner">
-            <button @click="tab = 'video'" :class="tab === 'video' ? 'bg-white shadow-sm text-blue-700' : 'text-slate-500 hover:text-slate-700'" 
-                    class="px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition-all">
+        <div class="flex bg-slate-200 p-1 rounded-xl shadow-inner w-full md:w-auto">
+            <button @click="tab = 'video'" 
+                    :class="tab === 'video' ? 'bg-white shadow-sm text-blue-700' : 'text-slate-500 hover:text-slate-700'" 
+                    class="flex-1 md:flex-none px-6 py-2.5 rounded-lg text-sm font-bold flex items-center justify-center gap-2 transition-all">
                 <i class="fas fa-video"></i> Vídeo
             </button>
-            <button @click="tab = 'text'" :class="tab === 'text' ? 'bg-white shadow-sm text-blue-700' : 'text-slate-500 hover:text-slate-700'" 
-                    class="px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition-all">
+            <button @click="tab = 'text'" 
+                    :class="tab === 'text' ? 'bg-white shadow-sm text-blue-700' : 'text-slate-500 hover:text-slate-700'" 
+                    class="flex-1 md:flex-none px-6 py-2.5 rounded-lg text-sm font-bold flex items-center justify-center gap-2 transition-all">
                 <i class="fas fa-file-alt"></i> Texto
             </button>
         </div>
     </div>
 
-    <div class="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden min-h-[400px]">
+    <div class="bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden min-h-[500px] flex flex-col">
         
         <div x-show="tab === 'video'" class="animate-fadeIn">
             {% if chapter.video_url %}
-                <div class="aspect-video bg-black">
+                <div class="aspect-video bg-black shadow-inner">
                     <iframe class="w-full h-full" 
-                            src="https://www.youtube.com/embed/{{ chapter.youtube_id }}" 
+                            src="https://www.youtube.com/embed/{{ chapter.youtube_id }}?rel=0&modestbranding=1" 
                             frameborder="0" allowfullscreen
                             referrerpolicy="strict-origin-when-cross-origin">
                     </iframe>
                 </div>
             {% else %}
-                <div class="p-20 text-center text-slate-400">
-                    <i class="fas fa-video-slash text-4xl mb-4 opacity-20"></i>
-                    <p>Esta aula não possui conteúdo em vídeo.</p>
+                <div class="py-32 text-center text-slate-400">
+                    <div class="bg-slate-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-video-slash text-3xl opacity-30"></i>
+                    </div>
+                    <p class="font-medium">Esta aula ainda não possui vídeo disponível.</p>
                 </div>
             {% endif %}
         </div>
 
-        <div x-show="tab === 'text'" class="p-8 animate-fadeIn" style="display: none;">
-            <article class="prose max-w-none text-slate-700 leading-relaxed text-lg">
-                {{ chapter.content|linebreaks }}
-            </article>
+        <div x-show="tab === 'text'" class="p-8 md:p-12 animate-fadeIn bg-slate-50/30 flex-grow" style="display: none;">
+            <article class="prose prose-slate max-w-none 
+            /* Configuração Geral */
+            prose-p:text-slate-600 prose-p:leading-relaxed prose-p:text-lg
+            
+            /* Títulos de Impacto */
+            prose-h1:text-4xl prose-h1:font-black prose-h1:text-blue-900 prose-h1:border-b-8 prose-h1:border-blue-100 prose-h1:pb-4 prose-h1:mb-12
+            prose-h2:text-2xl prose-h2:font-bold prose-h2:text-slate-800 prose-h2:flex prose-h2:items-center prose-h2:gap-3 prose-h2:mt-12
+            
+            /* Estilização de Código Sênior */
+            prose-pre:bg-slate-900 prose-pre:shadow-2xl prose-pre:rounded-2xl prose-pre:border prose-pre:border-slate-700
+            prose-code:text-blue-400 prose-code:bg-slate-100 prose-code:px-1 prose-code:rounded">
+
+            {% if chapter.content %}
+                <div class="space-y-8">
+                    {{ chapter.content|safe }}
+                </div>
+            {% else %}
+                <div class="text-center py-20 bg-slate-50 rounded-3xl border-2 border-dashed border-slate-200">
+                    <i class="fas fa-microchip text-5xl text-slate-300 mb-4 animate-pulse"></i>
+                    <p class="text-slate-500 font-medium">Processando conhecimento via Redes Neurais...</p>
+                </div>
+            {% endif %}
+        </article>
         </div>
 
-        <div class="p-8 bg-slate-50 border-t border-slate-100 flex flex-col items-center gap-4">
-            <div class="flex items-center gap-2 text-emerald-600 font-bold">
-                <i class="fas fa-award"></i>
-                <span>Recompensa ao finalizar: {{ chapter.xp_value }} XP</span>
+        <div class="p-8 bg-slate-100/50 border-t border-slate-200 flex flex-col items-center gap-6">
+            <div class="flex items-center gap-3 px-6 py-2 bg-emerald-100 text-emerald-700 rounded-full font-black text-sm uppercase tracking-widest shadow-sm">
+                <i class="fas fa-gem animate-bounce"></i>
+                <span>Recompensa: {{ chapter.xp_value }} XP</span>
             </div>
+            
             <a href="{% url 'gamification:complete_chapter' chapter.id %}" 
-               class="w-full md:w-auto bg-blue-700 hover:bg-blue-800 text-white font-black py-4 px-12 rounded-xl flex items-center justify-center gap-3 transition-all active:scale-95 shadow-lg text-lg">
-                <i class="fas fa-check-circle"></i> CONCLUIR ESTA AULA
+               class="w-full md:w-auto bg-blue-700 hover:bg-blue-800 text-white font-black py-5 px-16 rounded-2xl flex items-center justify-center gap-4 transition-all active:scale-95 shadow-xl hover:shadow-blue-200 text-xl group">
+                <i class="fas fa-check-circle group-hover:rotate-12 transition-transform"></i> 
+                CONCLUIR ESTA AULA
             </a>
         </div>
     </div>
@@ -62,7 +90,11 @@
 <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 
 <style>
-    .animate-fadeIn { animation: fadeIn 0.3s ease-in-out; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+    .animate-fadeIn { animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    
+    /* Melhoria na renderização de código para Mobile */
+    .prose pre { white-space: pre-wrap; word-break: break-all; border: 1px solid rgba(255,255,255,0.1); }
+    .prose code::before, .prose code::after { content: ""; } /* Remove aspas automáticas do Tailwind */
 </style>
 {% endblock %}

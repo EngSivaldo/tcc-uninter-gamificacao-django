@@ -10,10 +10,10 @@ class User(AbstractUser):
         help_text="Insira o RU do aluno."
     )
     
-    # Campo base para o motor de gamificação
-    points = models.PositiveIntegerField(
+    # Padronizando para 'xp' para bater com a lógica da View e Utils
+    xp = models.PositiveIntegerField(
         default=0, 
-        verbose_name="Saldo de Pontos"
+        verbose_name="Saldo de XP"
     )
 
     def __str__(self):
