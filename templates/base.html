@@ -20,14 +20,14 @@
                     fontFamily: { sans: ['Inter', 'sans-serif'] },
                     colors: {
                         dark: {
-                            950: '#07080D', // Preto absoluto estilo Hashtag
-                            900: '#0F111A', // Fundo de seções
-                            800: '#1A1D29', // Cards
-                            700: '#2A2E3D'  // Detalhes
+                            950: '#07080D', 
+                            900: '#0F111A', 
+                            800: '#1A1D29', 
+                            700: '#2A2E3D'  
                         },
                         hashtag: {
-                            neon: '#00FF9D',   // O verde "Impressionador"
-                            orange: '#FFB900', // O laranja de destaque
+                            neon: '#00FF9D',   
+                            orange: '#FFB900', 
                             blue: '#0066FF'
                         },
                         neon: '#00F5A0',
@@ -39,101 +39,115 @@
     </script>
 
     <style>
-        /* Fundo Aurora Tech Refinado - Cores mais profundas e menos "marrons" */
+        /* DESIGN REFINADO: Mantendo suas cores originais com mais profundidade */
         body {
-            background-color: #4055c2;
+            background-color: #070707;
             background-image: 
-                radial-gradient(at 0% 0%, rgba(0, 255, 157, 0.12) 0px, transparent 55%),
-                radial-gradient(at 100% 0%, rgba(0, 102, 255, 0.1) 0px, transparent 50%),
-                radial-gradient(at 100% 100%, rgba(255, 185, 0, 0.08) 0px, transparent 55%),
-                radial-gradient(at 0% 100%, rgba(139, 92, 246, 0.08) 0px, transparent 50%);
+                radial-gradient(at 0% 0%, rgba(0, 255, 157, 0.08) 0px, transparent 50%),
+                radial-gradient(at 100% 0%, rgba(0, 102, 255, 0.15) 0px, transparent 50%),
+                radial-gradient(at 50% 50%, rgba(21, 78, 145, 1) 0px, transparent 100%);
             color: #F8FAFC;
             scroll-behavior: smooth;
             background-attachment: fixed;
-            animation: auroraFlow 25s ease-in-out infinite alternate;
+            animation: auroraFlow 20s ease-in-out infinite alternate;
         }
 
         @keyframes auroraFlow {
             0% { background-position: 0% 0%; }
-            100% { background-position: 3% 3%; }
+            100% { background-position: 5% 5%; }
         }
 
+        /* Nav com a sua cor #000074 e Glassmorphism */
         .glass-nav {
-            background: rgba(7, 8, 13, 0.92);
-            backdrop-filter: blur(15px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(12px);
+            border-bottom: 2px solid rgba(0, 255, 157, 0.4);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
         }
 
-        /* Otimização de Imagens para Destaque Máximo */
-        img {
-            filter: contrast(1.1) saturate(1.2);
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        /* FIX DE CONTRASTE: Garante leitura em cards brancos sem quebrar a lógica */
+        .bg-white, .bg-slate-50, .force-dark {
+            color: #0F172A !important;
         }
-        img:hover {
-            filter: contrast(1.2) saturate(1.4) brightness(1.1);
-            transform: scale(1.02) translateY(-4px);
+        .bg-white p, .bg-white span, .bg-white h1, .bg-white h2, .bg-white h3, .bg-white div {
+            color: #1E293B !important;
         }
 
-        /* Scrollbar Premium Estilo Hashtag */
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #07080D; }
+        /* Estilização de Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #000074; }
         ::-webkit-scrollbar-thumb { 
-            background: linear-gradient(to bottom, #00FF9D, #0066FF);
-            border-radius: 20px;
+            background: #00FF9D;
+            border-radius: 10px;
         }
 
-        .glow-hover:hover {
-            box-shadow: 0 0 25px rgba(0, 255, 157, 0.15);
-            border-color: rgba(0, 255, 157, 0.3);
+        /* Footer com sua cor #2c3e82 */
+        .footer-custom {
+            background-color: #0a0a0a;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        /* Efeito de Tabela Comparativa Estilo Hashtag */
-        .comparison-grid {
-            background: rgba(26, 29, 41, 0.6);
-            border-radius: 2rem;
-            border: 1px solid rgba(255, 255, 255, 0.03);
+        /* Estilo para Alertas do Django */
+        .alert-toast {
+            background: #000074;
+            border-left: 4px solid #00FF9D;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
     </style>
 </head>
 <body class="min-h-screen flex flex-col font-sans antialiased text-slate-200">
 
-    <nav class="glass-nav sticky top-0 z-[100] shadow-2xl">
+    {% if messages %}
+    <div class="fixed top-24 right-6 z-[200] space-y-4">
+        {% for message in messages %}
+        <div class="alert-toast text-white px-6 py-4 rounded-xl flex items-center gap-4 animate-bounce">
+            <i class="fas fa-shield-alt text-hashtag-neon"></i>
+            <span class="font-bold text-sm">{{ message }}</span>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <nav class="glass-nav sticky top-0 z-[100]">
         <div class="max-w-7xl mx-auto px-6 h-20 flex justify-between items-center">
             
-            <div class="flex items-center gap-12">
-                <a href="/" class="flex items-center gap-2 group">
-                    <div class="relative">
-                        <div class="absolute inset-0 bg-hashtag-neon/30 blur-lg rounded-xl group-hover:bg-hashtag-neon/50 transition-all"></div>
-                        <div class="relative bg-dark-800 p-2 rounded-xl border border-white/10 shadow-2xl">
-                            <i class="fas fa-graduation-cap text-lg text-hashtag-neon"></i>
-                        </div>
+            <div class="flex items-center gap-10">
+                <a href="/" class="flex items-center gap-3 group transition-transform hover:scale-105">
+                    <div class="bg-dark-800 p-2.5 rounded-xl border border-white/10 shadow-lg">
+                        <i class="fas fa-graduation-cap text-xl text-hashtag-neon"></i>
                     </div>
                     <span class="font-black text-2xl tracking-tighter text-white uppercase italic">
                         GAMIFICA<span class="text-hashtag-neon">UNINTER</span>
                     </span>
                 </a>
                 
-                <div class="hidden lg:flex items-center gap-8">
-                    <a href="/" class="text-[11px] font-extrabold uppercase tracking-widest text-slate-400 hover:text-hashtag-neon transition-all">Catálogo</a>
-                    <a href="{% url 'accounts:dashboard' %}" class="text-[11px] font-extrabold uppercase tracking-widest text-slate-400 hover:text-hashtag-orange transition-all">Meu Progresso</a>
+                <div class="hidden lg:flex items-center gap-8 border-l border-white/10 pl-8">
+                    <a href="/" class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-300 hover:text-hashtag-neon transition-colors">Catálogo</a>
+                    <a href="{% url 'accounts:dashboard' %}" class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-300 hover:text-hashtag-orange transition-colors">Meu Progresso</a>
                 </div>
             </div>
             
             <div class="flex items-center gap-6">
-                <div class="bg-dark-800 border border-white/10 pl-4 pr-1 py-1 rounded-2xl flex items-center gap-4 group cursor-pointer hover:border-hashtag-neon/40 transition-all">
+                {% if user.is_plus %}
+                <div class="hidden md:flex items-center gap-2 bg-hashtag-orange/10 border border-hashtag-orange/40 px-3 py-1.5 rounded-full">
+                    <i class="fas fa-crown text-[10px] text-hashtag-orange animate-pulse"></i>
+                    <span class="text-[9px] font-black text-hashtag-orange uppercase tracking-widest">Plus Account</span>
+                </div>
+                {% endif %}
+
+                <div class="bg-dark-950/40 border border-white/10 pl-4 pr-1 py-1 rounded-2xl flex items-center gap-4">
                     <div class="flex flex-col items-end leading-none">
-                        <span class="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1">Engenheiro(a)</span>
+                        <span class="text-[8px] font-black text-slate-500 uppercase mb-1 italic">Engenheiro(a)</span>
                         <span class="text-xs font-bold text-white">{{ user.username|title }}</span>
                     </div>
-                    <div class="bg-hashtag-neon/10 px-3 py-2 rounded-xl border border-hashtag-neon/20 group-hover:bg-hashtag-neon/20">
-                        <i class="fas fa-bolt text-hashtag-neon text-xs"></i>
-                        <span class="font-black text-white text-xs ml-1">{{ user.xp|default:0 }} XP</span>
+                    <div class="bg-hashtag-neon text-dark-950 px-4 py-2 rounded-xl font-black text-xs shadow-[0_0_15px_rgba(0,255,157,0.2)]">
+                        <i class="fas fa-bolt mr-1"></i> {{ user.xp|default:0 }} XP
                     </div>
                 </div>
 
                 <form action="{% url 'accounts:logout' %}" method="post" class="m-0">
                     {% csrf_token %}
-                    <button type="submit" class="bg-dark-800 hover:bg-red-500/20 text-slate-500 hover:text-red-500 p-3 rounded-xl transition-all border border-white/5">
+                    <button type="submit" class="bg-white/5 hover:bg-red-500/20 text-slate-400 hover:text-red-400 p-3 rounded-xl transition-all border border-white/5">
                         <i class="fas fa-power-off text-sm"></i>
                     </button>
                 </form>
@@ -141,58 +155,56 @@
         </div>
     </nav>
 
-    <main class="flex-grow container mx-auto px-4 py-8 relative z-10">
+    <main class="flex-grow container mx-auto px-4 py-10 relative z-10">
         {% block content %}
         {% endblock %}
     </main>
 
-    <footer class="bg-dark-950 border-t border-white/5 py-20 mt-24 relative overflow-hidden">
-        <div class="absolute top-0 right-0 w-64 h-64 bg-hashtag-neon/5 blur-[100px] rounded-full"></div>
-        
+    <footer class="footer-custom py-16 mt-20 relative overflow-hidden">
         <div class="max-w-7xl mx-auto px-6 relative z-10">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-16 items-start mb-16">
-                <div class="space-y-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center mb-12">
+                <div class="space-y-6">
                     <div class="inline-block border-l-4 border-hashtag-neon pl-6">
-                        <p class="text-hashtag-neon font-black text-[11px] uppercase tracking-[0.5em] mb-2 italic">Resultados Reais</p>
-                        <h4 class="text-white font-extrabold text-3xl tracking-tighter uppercase italic">Torne-se uma Referência.</h4>
+                        <p class="text-hashtag-neon font-black text-[10px] uppercase tracking-[0.4em] mb-1 italic">Software Engineering Track</p>
+                        <h4 class="text-white font-extrabold text-3xl tracking-tighter uppercase italic">Polo UNINTER &copy; 2026</h4>
                     </div>
                     
                     <div class="flex flex-col sm:flex-row gap-4">
-                        <div class="bg-dark-800/80 p-5 rounded-3xl border border-white/5 shadow-2xl flex-1 group hover:border-hashtag-neon/30 transition-all">
-                            <p class="text-slate-500 text-[9px] uppercase font-black tracking-widest mb-3">Dev Lead Account</p>
-                            <p class="text-white font-black text-sm">Sivaldo V. Almeida <span class="text-hashtag-neon ml-2 text-xs font-mono">RU: 4139872</span></p>
+                        <div class="bg-dark-950/30 p-5 rounded-2xl border border-white/5 flex-1">
+                            <p class="text-slate-500 text-[9px] uppercase font-black tracking-widest mb-2">Dev Lead</p>
+                            <p class="text-white font-black text-sm">Sivaldo V. Almeida</p>
+                            <p class="text-hashtag-neon text-[10px] font-mono mt-1">RU: 4139872</p>
                         </div>
-                        <div class="bg-dark-800/80 p-5 rounded-3xl border border-white/5 shadow-2xl flex-1 group hover:border-accent/30 transition-all">
-                            <p class="text-slate-500 text-[9px] uppercase font-black tracking-widest mb-3">Research Lead Account</p>
-                            <p class="text-white font-black text-sm">Eralice de M. Baía <span class="text-accent ml-2 text-xs font-mono">RU: 4144099</span></p>
+                        <div class="bg-dark-950/30 p-5 rounded-2xl border border-white/5 flex-1">
+                            <p class="text-slate-500 text-[9px] uppercase font-black tracking-widest mb-2">Research Lead</p>
+                            <p class="text-white font-black text-sm">Eralice de M. Baía</p>
+                            <p class="text-accent text-[10px] font-mono mt-1">RU: 4144099</p>
                         </div>
                     </div>
                 </div>
 
-                <div class="flex flex-col items-center md:items-end justify-between h-full py-2">
+                <div class="flex flex-col items-center md:items-end space-y-4">
                     <div class="text-right">
-                        <p class="text-[10px] font-black text-slate-600 uppercase tracking-[0.4em] mb-1">Polo UNINTER &copy; 2026</p>
-                        <p class="text-xs font-bold text-slate-400">Plataforma Gamificada Impressionadora</p>
+                        <p class="text-[10px] font-black text-white/40 uppercase tracking-[0.3em] mb-1">Status do Sistema</p>
+                        <p class="text-xs font-bold text-slate-300">Ambiente de Produção Ativo</p>
                     </div>
-                    <div class="flex gap-4 mt-8">
-                        <div class="h-12 w-12 bg-dark-800 rounded-2xl flex items-center justify-center border border-white/5 hover:bg-hashtag-orange/10 transition-colors">
-                            <i class="fas fa-code text-hashtag-orange"></i>
+                    <div class="flex gap-4">
+                        <div class="h-10 w-10 bg-white/5 rounded-lg flex items-center justify-center border border-white/10 hover:border-hashtag-neon transition-colors cursor-pointer">
+                            <i class="fab fa-linkedin-in text-slate-400"></i>
                         </div>
-                        <div class="h-12 w-12 bg-dark-800 rounded-2xl flex items-center justify-center border border-white/5 hover:bg-hashtag-neon/10 transition-colors">
-                            <i class="fas fa-microchip text-hashtag-neon"></i>
+                        <div class="h-10 w-10 bg-white/5 rounded-lg flex items-center justify-center border border-white/10 hover:border-hashtag-neon transition-colors cursor-pointer">
+                            <i class="fab fa-github text-slate-400"></i>
                         </div>
                     </div>
                 </div>
             </div>
             
-            <div class="border-t border-white/5 pt-8 text-center md:text-left flex flex-col md:flex-row justify-between items-center gap-4">
-                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest leading-relaxed">
-                    Este sistema é focado em preparar você para os maiores desafios da Engenharia de Software.
+            <div class="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-relaxed">
+                    Este sistema é focado em preparar os melhores engenheiros do Polo UNINTER para o mercado.
                 </p>
-                <div class="flex gap-6 text-slate-500">
-                    <i class="fab fa-linkedin hover:text-white cursor-pointer transition-colors"></i>
-                    <i class="fab fa-github hover:text-white cursor-pointer transition-colors"></i>
-                    <i class="fab fa-instagram hover:text-white cursor-pointer transition-colors"></i>
+                <div class="bg-hashtag-neon/10 px-4 py-1 rounded-full border border-hashtag-neon/20">
+                    <span class="text-[9px] font-black text-hashtag-neon uppercase">Build: Stable v2.0</span>
                 </div>
             </div>
         </div>
