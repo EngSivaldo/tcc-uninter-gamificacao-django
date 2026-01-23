@@ -46,21 +46,40 @@ class Trail(TimestampedModel):
     def __str__(self):
         return self.title
 
+import re
+from django.db import models
+from django.utils.text import slugify
+# Certifique-se de que o TimestampedModel está importado corretamente do seu core/models
+# from apps.core.models import TimestampedModel 
+
 class Chapter(TimestampedModel):
-    trail = models.ForeignKey(Trail, on_delete=models.CASCADE, related_name='chapters')
+    trail = models.ForeignKey('Trail', on_delete=models.CASCADE, related_name='chapters')
     title = models.CharField(max_length=200, verbose_name="Título do Capítulo")
-    # Adicionado Slug também ao capítulo para consistência de URL
     slug = models.SlugField(max_length=200, unique=True, null=True, blank=True)
-    video_url = models.URLField(blank=True, null=True, verbose_name="URL da Vídeo Aula")
+    video_url = models.URLField(max_length=500, blank=True, null=True, verbose_name="URL da Vídeo Aula")
     content = models.TextField(blank=True, null=True)
     xp_value = models.PositiveIntegerField(default=50, verbose_name="Valor em XP")
     order = models.PositiveIntegerField(default=0, verbose_name="Ordem")
 
+    @property
+    def youtube_id(self):
+        """
+        Extrai o ID do vídeo do YouTube a partir da video_url.
+        Suporta diversos formatos de link (curto, longo, embed).
+        """
+        if not self.video_url:
+            return None
+        
+        # Regex para capturar os 11 caracteres do ID do YouTube
+        regex = r'(?:v=|\/|be\/|embed\/)([a-zA-Z0-9_-]{11})'
+        match = re.search(regex, self.video_url)
+        
+        return match.group(1) if match else None
+
     def save(self, *args, **kwargs):
         # 1. LÓGICA DE SEQUENCIAMENTO (Apenas para novos registros)
-        if not self.pk:  # Se o objeto ainda não tem ID, é porque está sendo criado agora
+        if not self.pk:  
             if self.order == 0:
-                # Conta quantos capítulos já existem na trilha para definir o próximo número
                 last_order = Chapter.objects.filter(trail=self.trail).count()
                 self.order = last_order + 1
             
@@ -69,13 +88,10 @@ class Chapter(TimestampedModel):
                 self.title = f"Aula {self.order:02d} - {self.title}"
 
         # 2. LÓGICA DE SLUG E ANTI-COLISÃO
-        # Geramos o slug apenas se ele estiver vazio (geralmente na criação)
         if not self.slug:
             base_slug = slugify(self.title)
             slug = base_slug
             counter = 1
-            # Verifica se já existe um slug igual e adiciona sufixo se necessário
-            # Ex: aula-01-intro, aula-01-intro-1, aula-01-intro-2...
             while Chapter.objects.filter(slug=slug).exists():
                 slug = f"{base_slug}-{counter}"
                 counter += 1
@@ -83,6 +99,13 @@ class Chapter(TimestampedModel):
 
         # 3. SALVAMENTO FINAL
         super().save(*args, **kwargs)
+        
+    class Meta:
+        ordering = ['order']
+        # Impede títulos duplicados DENTRO da mesma trilha
+        unique_together = ('trail', 'title') 
+        verbose_name = "Capítulo"
+        verbose_name_plural = "Capítulos"
         
     class Meta:
         ordering = ['order']

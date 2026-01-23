@@ -4,6 +4,7 @@ from django.contrib import messages
 from django.db import transaction # Importante para integridade de dados
 from .models import Trail, Chapter, PointTransaction
 from .utils import check_user_medals
+import markdown  # <--- 1. Importação necessária
 
 @login_required
 def trail_list(request):
@@ -19,8 +20,21 @@ def trail_detail(request, trail_id):
 
 @login_required
 def chapter_detail(request, chapter_id):
-    """Exibe o conteúdo da aula."""
+    """Exibe o conteúdo da aula com renderização de Markdown."""
     chapter = get_object_or_404(Chapter, id=chapter_id)
+    
+    # 2. Conversão do Markdown para HTML
+    # Adicionamos extensões para suportar tabelas e blocos de código (fenced_code)
+    chapter.content_html = markdown.markdown(
+        chapter.content, 
+        extensions=[
+            'fenced_code', 
+            'codehilite', 
+            'tables', 
+            'toc'
+        ]
+    )
+    
     return render(request, 'gamification/chapter_detail.html', {'chapter': chapter})
 
 @login_required

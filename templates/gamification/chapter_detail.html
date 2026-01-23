@@ -28,7 +28,7 @@
     <div class="bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden min-h-[500px] flex flex-col">
         
         <div x-show="tab === 'video'" class="animate-fadeIn">
-            {% if chapter.video_url %}
+            {% if chapter.youtube_id %}
                 <div class="aspect-video bg-black shadow-inner">
                     <iframe class="w-full h-full" 
                             src="https://www.youtube.com/embed/{{ chapter.youtube_id }}?rel=0&modestbranding=1" 
@@ -47,29 +47,26 @@
         </div>
 
         <div x-show="tab === 'text'" class="p-8 md:p-12 animate-fadeIn bg-slate-50/30 flex-grow" style="display: none;">
-            <article class="prose prose-slate max-w-none 
-            /* Configuração Geral */
-            prose-p:text-slate-600 prose-p:leading-relaxed prose-p:text-lg
-            
-            /* Títulos de Impacto */
-            prose-h1:text-4xl prose-h1:font-black prose-h1:text-blue-900 prose-h1:border-b-8 prose-h1:border-blue-100 prose-h1:pb-4 prose-h1:mb-12
-            prose-h2:text-2xl prose-h2:font-bold prose-h2:text-slate-800 prose-h2:flex prose-h2:items-center prose-h2:gap-3 prose-h2:mt-12
-            
-            /* Estilização de Código Sênior */
-            prose-pre:bg-slate-900 prose-pre:shadow-2xl prose-pre:rounded-2xl prose-pre:border prose-pre:border-slate-700
-            prose-code:text-blue-400 prose-code:bg-slate-100 prose-code:px-1 prose-code:rounded">
+            <article class="prose prose-slate max-w-none ...">
 
-            {% if chapter.content %}
-                <div class="space-y-8">
-                    {{ chapter.content|safe }}
-                </div>
-            {% else %}
-                <div class="text-center py-20 bg-slate-50 rounded-3xl border-2 border-dashed border-slate-200">
-                    <i class="fas fa-microchip text-5xl text-slate-300 mb-4 animate-pulse"></i>
-                    <p class="text-slate-500 font-medium">Processando conhecimento via Redes Neurais...</p>
-                </div>
-            {% endif %}
-        </article>
+                {% if chapter.content_html %} 
+                    {# MUITO IMPORTANTE: Use content_html aqui, que é o texto já processado pela View #}
+                    <div class="space-y-8">
+                        {{ chapter.content_html|safe }}
+                    </div>
+                {% elif chapter.content %}
+                    {# Caso você esqueça de converter na View, este fallback evita que a tela fique branca #}
+                    <div class="space-y-8">
+                        {{ chapter.content|linebreaks }}
+                    </div>
+                {% else %}
+                    <div class="text-center py-20 bg-slate-50 rounded-3xl border-2 border-dashed border-slate-200">
+                        <i class="fas fa-microchip text-5xl text-slate-300 mb-4 animate-pulse"></i>
+                        <p class="text-slate-500 font-medium">Processando conhecimento via Redes Neurais...</p>
+                    </div>
+                {% endif %}
+            
+            </article>
         </div>
 
         <div class="p-8 bg-slate-100/50 border-t border-slate-200 flex flex-col items-center gap-6">
@@ -93,8 +90,7 @@
     .animate-fadeIn { animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     
-    /* Melhoria na renderização de código para Mobile */
     .prose pre { white-space: pre-wrap; word-break: break-all; border: 1px solid rgba(255,255,255,0.1); }
-    .prose code::before, .prose code::after { content: ""; } /* Remove aspas automáticas do Tailwind */
+    .prose code::before, .prose code::after { content: ""; } 
 </style>
 {% endblock %}
