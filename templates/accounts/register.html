@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="min-h-[80vh] flex items-center justify-center py-12 px-4 relative overflow-hidden">
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-accent/10 blur-[120px] rounded-full -z-10"></div>
+
+    <div class="max-w-md w-full space-y-8 animate-fadeIn">
+        <div class="bg-dark-800/60 border border-white/10 rounded-[3rem] shadow-2xl backdrop-blur-xl p-10 md:p-12">
+            <div class="text-center mb-10">
+                <div class="inline-flex items-center justify-center w-16 h-16 bg-dark-900 border border-white/10 rounded-2xl mb-6 shadow-glow">
+                    <i class="fas fa-user-plus text-neon text-2xl"></i>
+                </div>
+                <h2 class="text-3xl font-black text-white tracking-tighter uppercase italic leading-none">
+                    Novo <span class="text-neon">Engenheiro</span>
+                </h2>
+                <p class="text-slate-500 text-[9px] font-bold uppercase tracking-[0.3em] mt-2">Crie sua credencial de acesso</p>
+            </div>
+
+            <form method="post" class="space-y-5">
+                {% csrf_token %}
+                
+                {% for field in form %}
+                <div class="space-y-2">
+                    <label class="block text-[10px] font-black text-slate-500 uppercase tracking-widest ml-4">
+                        {{ field.label }}
+                    </label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-4 flex items-center text-slate-500">
+                            <i class="fas fa-edit text-xs"></i>
+                        </div>
+                        <style>
+                            /* Forçamos o estilo nos inputs gerados pelo Django */
+                            input {
+                                width: 100%;
+                                background: rgba(15, 18, 29, 0.5) !important;
+                                border: 1px solid rgba(255, 255, 255, 0.1) !important;
+                                border-radius: 1rem !important;
+                                padding: 1rem 1rem 1rem 3rem !important;
+                                color: white !important;
+                                outline: none !important;
+                            }
+                            input:focus { border-color: #00D9FF !important; box-shadow: 0 0 10px rgba(0, 217, 255, 0.2) !important; }
+                        </style>
+                        {{ field }}
+                    </div>
+                    {% if field.errors %}
+                        <p class="text-red-400 text-[10px] font-bold mt-1 ml-4">{{ field.errors.0 }}</p>
+                    {% endif %}
+                </div>
+                {% endfor %}
+
+                <button type="submit" class="w-full bg-white text-dark-950 py-5 rounded-2xl font-black uppercase italic tracking-tighter hover:bg-neon hover:shadow-[0_0_30px_rgba(0,245,160,0.4)] transition-all shadow-2xl mt-4">
+                    Finalizar Deploy de Conta
+                </button>
+            </form>
+
+            <div class="mt-8 text-center">
+                <a href="{% url 'accounts:login' %}" class="text-[10px] font-black text-slate-500 uppercase tracking-widest hover:text-accent transition-colors">
+                    Já possui acesso? <span class="text-white">Fazer Login</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

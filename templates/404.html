@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="min-h-[75vh] flex flex-col items-center justify-center text-center px-6 animate-fadeIn">
+    
+    <div class="relative mb-10">
+        <div class="absolute inset-0 bg-blue-400 blur-[80px] opacity-20 rounded-full animate-pulse"></div>
+        <i class="fas fa-compass text-[120px] text-slate-300 relative animate-[spin_10s_linear_infinite]"></i>
+        <div class="absolute -top-4 -right-4 bg-red-600 text-white w-14 h-14 rounded-2xl flex items-center justify-center font-black border-4 border-white shadow-2xl rotate-12">
+            404
+        </div>
+    </div>
+
+    <h1 class="text-4xl md:text-5xl font-black text-slate-800 mb-4 tracking-tighter">NÍVEL NÃO ENCONTRADO</h1>
+    <p class="text-slate-500 max-w-md mx-auto mb-12 leading-relaxed font-medium text-lg">
+        Parece que você se desviou da trilha principal. Esta área ainda não foi mapeada em nosso sistema de conhecimento.
+    </p>
+
+    <div class="flex flex-col sm:flex-row gap-5">
+        <a href="{% url 'accounts:dashboard' %}" 
+           class="bg-blue-700 hover:bg-blue-800 text-white font-black py-5 px-12 rounded-[2rem] transition-all shadow-[0_20px_40px_rgba(29,78,216,0.25)] hover:scale-105 flex items-center justify-center gap-3 group">
+            <i class="fas fa-home group-hover:-translate-y-1 transition-transform"></i>
+            RETORNAR AO DASHBOARD
+        </a>
+        <a href="{% url 'gamification:trail_list' %}" 
+           class="bg-white border-2 border-slate-200 hover:border-blue-500 text-slate-600 hover:text-blue-700 font-black py-5 px-12 rounded-[2rem] transition-all flex items-center justify-center gap-3">
+            EXPLORAR TRILHAS
+        </a>
+    </div>
+</div>
+
+[Image of a custom 404 error page design for a web application]
+
+<style>
+    .animate-fadeIn { animation: fadeIn 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+{% endblock %}

@@ -18,8 +18,10 @@ sys.path.insert(0, os.path.join(BASE_DIR, 'apps'))
 
 # 4. Segurança e Core
 SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-default-change-me')
-DEBUG = os.getenv('DEBUG', 'True') == 'True'
-ALLOWED_HOSTS = []
+DEBUG = os.getenv('DEBUG', 'False') == 'True'
+# Se o DEBUG for False, precisamos dizer quais domínios podem acessar o site
+# Em desenvolvimento/Docker, usamos '*' ou 'localhost 127.0.0.1'
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost 127.0.0.1').split()
 
 # 5. Definição de Aplicativos
 INSTALLED_APPS = [

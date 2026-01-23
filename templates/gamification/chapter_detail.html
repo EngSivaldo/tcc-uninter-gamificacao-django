@@ -1,31 +1,42 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="max-w-4xl mx-auto" x-data="{ tab: 'video' }"> 
-    <div class="mb-6 flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
-        <div>
+<div class="max-w-5xl mx-auto px-4 py-12 space-y-12 animate-fadeIn" x-data="{ tab: 'video' }"> 
+    
+    <header class="flex flex-col md:flex-row justify-between items-start md:items-end gap-8 relative z-20">
+        <div class="space-y-4 flex-grow">
             <a href="{% url 'gamification:trail_detail' chapter.trail.id %}" 
-               class="text-slate-500 hover:text-blue-700 font-medium text-sm transition-colors flex items-center gap-2 mb-2">
-                <i class="fas fa-arrow-left"></i> Voltar ao Índice da Trilha
+               class="group inline-flex items-center gap-2 text-accent hover:text-neon transition-all font-black text-[10px] uppercase tracking-[0.4em]">
+                <i class="fas fa-chevron-left group-hover:-translate-x-1 transition-transform"></i> 
+                Voltar ao Índice da Trilha
             </a>
-            <h1 class="text-3xl font-black text-slate-800 tracking-tight">{{ chapter.title }}</h1>
+            
+            <div class="space-y-1">
+                <div class="flex items-center gap-3">
+                    <span class="h-[2px] w-8 bg-neon"></span>
+                    <span class="text-neon font-black text-[10px] uppercase tracking-widest">Unidade em Execução</span>
+                </div>
+                <h1 class="text-4xl md:text-6xl font-black text-white tracking-tighter leading-none">
+                    {{ chapter.title }}
+                </h1>
+            </div>
         </div>
-        
-        <div class="flex bg-slate-200 p-1 rounded-xl shadow-inner w-full md:w-auto">
+
+        <div class="flex bg-dark-900/60 p-1.5 rounded-2xl border border-white/10 backdrop-blur-xl w-full md:w-auto shadow-2xl">
             <button @click="tab = 'video'" 
-                    :class="tab === 'video' ? 'bg-white shadow-sm text-blue-700' : 'text-slate-500 hover:text-slate-700'" 
-                    class="flex-1 md:flex-none px-6 py-2.5 rounded-lg text-sm font-bold flex items-center justify-center gap-2 transition-all">
-                <i class="fas fa-video"></i> Vídeo
+                    :class="tab === 'video' ? 'bg-dark-700 text-neon shadow-[0_0_15px_rgba(0,245,160,0.25)] border-white/10' : 'text-slate-500 hover:text-slate-300 border-transparent'" 
+                    class="flex-1 md:flex-none px-8 py-3 rounded-xl text-[10px] font-black tracking-[0.2em] flex items-center justify-center gap-3 transition-all border">
+                <i class="fas fa-video"></i> VÍDEO
             </button>
             <button @click="tab = 'text'" 
-                    :class="tab === 'text' ? 'bg-white shadow-sm text-blue-700' : 'text-slate-500 hover:text-slate-700'" 
-                    class="flex-1 md:flex-none px-6 py-2.5 rounded-lg text-sm font-bold flex items-center justify-center gap-2 transition-all">
-                <i class="fas fa-file-alt"></i> Texto
+                    :class="tab === 'text' ? 'bg-dark-700 text-accent shadow-[0_0_15px_rgba(0,217,255,0.25)] border-white/10' : 'text-slate-500 hover:text-slate-300 border-transparent'" 
+                    class="flex-1 md:flex-none px-8 py-3 rounded-xl text-[10px] font-black tracking-[0.2em] flex items-center justify-center gap-3 transition-all border">
+                <i class="fas fa-file-alt"></i> TEXTO
             </button>
         </div>
-    </div>
+    </header>
 
-    <div class="bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden min-h-[500px] flex flex-col">
+    <div class="group relative bg-dark-800/40 border border-white/5 rounded-[3rem] shadow-2xl overflow-hidden min-h-[600px] flex flex-col backdrop-blur-sm">
         
         <div x-show="tab === 'video'" class="animate-fadeIn">
             {% if chapter.youtube_id %}
@@ -37,60 +48,70 @@
                     </iframe>
                 </div>
             {% else %}
-                <div class="py-32 text-center text-slate-400">
-                    <div class="bg-slate-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <i class="fas fa-video-slash text-3xl opacity-30"></i>
+                <div class="py-40 text-center space-y-6">
+                    <div class="bg-dark-900/50 w-24 h-24 rounded-full flex items-center justify-center mx-auto border border-white/5 shadow-inner">
+                        <i class="fas fa-video-slash text-4xl text-slate-700"></i>
                     </div>
-                    <p class="font-medium">Esta aula ainda não possui vídeo disponível.</p>
+                    <p class="text-slate-500 font-black text-xs uppercase tracking-[0.3em]">Esta aula ainda não possui vídeo disponível.</p>
                 </div>
             {% endif %}
         </div>
 
-        <div x-show="tab === 'text'" class="p-8 md:p-12 animate-fadeIn bg-slate-50/30 flex-grow" style="display: none;">
-            <article class="prose prose-slate max-w-none ...">
+        <div x-show="tab === 'text'" class="p-8 md:p-20 animate-fadeIn flex-grow" style="display: none;">
+            <article class="prose prose-invert lg:prose-2xl max-w-none 
+                            prose-headings:text-white prose-headings:font-black prose-headings:tracking-tighter
+                            prose-p:text-slate-400 prose-p:leading-relaxed
+                            prose-strong:text-neon
+                            prose-code:text-accent prose-code:bg-accent/5 prose-code:px-2 prose-code:rounded
+                            prose-pre:bg-dark-900/80 prose-pre:border prose-pre:border-white/10 prose-pre:rounded-3xl">
 
-                {% if chapter.content_html %} 
-                    {# MUITO IMPORTANTE: Use content_html aqui, que é o texto já processado pela View #}
-                    <div class="space-y-8">
-                        {{ chapter.content_html|safe }}
-                    </div>
-                {% elif chapter.content %}
-                    {# Caso você esqueça de converter na View, este fallback evita que a tela fique branca #}
-                    <div class="space-y-8">
-                        {{ chapter.content|linebreaks }}
-                    </div>
-                {% else %}
-                    <div class="text-center py-20 bg-slate-50 rounded-3xl border-2 border-dashed border-slate-200">
-                        <i class="fas fa-microchip text-5xl text-slate-300 mb-4 animate-pulse"></i>
-                        <p class="text-slate-500 font-medium">Processando conhecimento via Redes Neurais...</p>
-                    </div>
-                {% endif %}
-            
+                <div class="relative z-10">
+                    {% if chapter.content_html %} 
+                        <div class="space-y-8">
+                            {{ chapter.content_html|safe }}
+                        </div>
+                    {% elif chapter.content %}
+                        <div class="space-y-8">
+                            {{ chapter.content|linebreaks }}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-20 bg-dark-900/30 rounded-[2rem] border border-dashed border-white/5">
+                            <i class="fas fa-microchip text-5xl text-dark-700 mb-6 animate-pulse"></i>
+                            <p class="text-slate-500 font-black text-xs uppercase tracking-[0.4em]">Processando conhecimento via Redes Neurais...</p>
+                        </div>
+                    {% endif %}
+                </div>
             </article>
         </div>
 
-        <div class="p-8 bg-slate-100/50 border-t border-slate-200 flex flex-col items-center gap-6">
-            <div class="flex items-center gap-3 px-6 py-2 bg-emerald-100 text-emerald-700 rounded-full font-black text-sm uppercase tracking-widest shadow-sm">
-                <i class="fas fa-gem animate-bounce"></i>
-                <span>Recompensa: {{ chapter.xp_value }} XP</span>
+        <footer class="p-12 bg-dark-900/60 border-t border-white/5 flex flex-col items-center gap-10">
+            <div class="inline-flex items-center gap-4 px-8 py-3 bg-white/[0.03] text-white rounded-full border border-white/10 transition-all hover:bg-white/[0.05]">
+                <i class="fas fa-gem text-neon drop-shadow-[0_0_8px_rgba(0,245,160,0.5)]"></i>
+                <span class="font-black text-[10px] tracking-[0.3em] uppercase italic">Unlock: <span class="text-neon">+{{ chapter.xp_value }} XP</span></span>
             </div>
             
             <a href="{% url 'gamification:complete_chapter' chapter.id %}" 
-               class="w-full md:w-auto bg-blue-700 hover:bg-blue-800 text-white font-black py-5 px-16 rounded-2xl flex items-center justify-center gap-4 transition-all active:scale-95 shadow-xl hover:shadow-blue-200 text-xl group">
-                <i class="fas fa-check-circle group-hover:rotate-12 transition-transform"></i> 
-                CONCLUIR ESTA AULA
+               class="group relative inline-flex items-center justify-center px-16 py-6 font-black text-dark-900 bg-white hover:bg-neon rounded-3xl transition-all hover:scale-[1.03] hover:shadow-[0_20px_60px_-15px_rgba(0,245,160,0.4)] active:scale-95 text-xl uppercase italic tracking-tighter w-full md:w-auto overflow-hidden">
+                <span class="relative flex items-center gap-4">
+                    <i class="fas fa-check-circle text-sm opacity-40"></i>
+                    CONCLUIR ESTA AULA
+                    <i class="fas fa-chevron-right text-sm group-hover:translate-x-2 transition-transform"></i>
+                </span>
             </a>
-        </div>
+        </footer>
     </div>
 </div>
 
-<script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
-
 <style>
-    .animate-fadeIn { animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    /* Animação Suave */
+    .animate-fadeIn { animation: fadeIn 0.5s ease-out forwards; }
+    @keyframes fadeIn { 
+        from { opacity: 0; transform: translateY(15px); } 
+        to { opacity: 1; transform: translateY(0); } 
+    }
     
-    .prose pre { white-space: pre-wrap; word-break: break-all; border: 1px solid rgba(255,255,255,0.1); }
+    /* Melhoria Semântica para Blocos de Código */
+    .prose pre { white-space: pre-wrap; word-break: break-all; border: 1px solid rgba(255,255,255,0.05); }
     .prose code::before, .prose code::after { content: ""; } 
 </style>
 {% endblock %}

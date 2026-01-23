@@ -1,25 +1,105 @@
 {% extends 'base.html' %}
+
 {% block content %}
-<div class="max-w-md mx-auto bg-white rounded-xl shadow-lg border border-slate-200 p-8 mt-12">
-    <div class="text-center mb-8">
-        <i class="fas fa-user-lock text-blue-600 text-4xl mb-4"></i>
-        <h2 class="text-2xl font-bold text-slate-800">Acesso ao Aluno</h2>
-        <p class="text-slate-500 text-sm">Entre com seu RU e senha acadêmica</p>
-    </div>
+<div class="min-h-[80vh] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
     
-    <form method="post" class="space-y-4">
-        {% csrf_token %}
-        <div>
-            <label class="block text-sm font-bold text-slate-700 mb-1">RU ou Usuário</label>
-            <input type="text" name="username" class="w-full border border-slate-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 outline-none">
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-accent/10 blur-[120px] rounded-full -z-10"></div>
+
+    <div class="max-w-md w-full space-y-8 animate-fadeIn">
+        
+        <div class="bg-dark-800/40 border border-white/5 rounded-[3rem] shadow-2xl backdrop-blur-xl p-10 md:p-12 relative">
+            
+            <div class="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-1 bg-gradient-to-r from-transparent via-accent to-transparent"></div>
+
+            <div class="text-center mb-10">
+                <div class="inline-flex items-center justify-center w-20 h-20 bg-dark-900 border border-white/10 rounded-3xl shadow-inner mb-6 group">
+                    <i class="fas fa-user-shield text-3xl text-accent group-hover:scale-110 transition-transform"></i>
+                </div>
+                
+                <h2 class="text-3xl font-black text-white tracking-tighter uppercase italic leading-none mb-3">
+                    Acesso ao <span class="text-neon">Engenheiro</span>
+                </h2>
+                <p class="text-slate-500 text-[10px] font-bold uppercase tracking-[0.3em]">
+                    Identifique-se para iniciar o deploy
+                </p>
+            </div>
+
+            <form method="post" class="space-y-6">
+                {% csrf_token %}
+                
+                <div class="space-y-2">
+                    <label class="block text-[10px] font-black text-slate-500 uppercase tracking-widest ml-4">
+                        RU ou Identificador
+                    </label>
+                    <div class="relative group">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-600 group-focus-within:text-accent transition-colors">
+                            <i class="fas fa-terminal text-xs"></i>
+                        </div>
+                        <input type="text" name="username" required
+                               class="w-full bg-dark-900/50 border border-white/10 rounded-2xl px-12 py-4 text-white placeholder-slate-600 focus:border-accent focus:ring-1 focus:ring-accent outline-none transition-all font-medium"
+                               placeholder="Digite seu RU">
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <div class="flex justify-between items-center px-4">
+                        <label class="block text-[10px] font-black text-slate-500 uppercase tracking-widest">
+                            Senha Acadêmica
+                        </label>
+                    </div>
+                    <div class="relative group">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-600 group-focus-within:text-accent transition-colors">
+                            <i class="fas fa-key text-xs"></i>
+                        </div>
+                        <input type="password" name="password" required
+                               class="w-full bg-dark-900/50 border border-white/10 rounded-2xl px-12 py-4 text-white placeholder-slate-600 focus:border-accent focus:ring-1 focus:ring-accent outline-none transition-all font-medium"
+                               placeholder="••••••••">
+                    </div>
+                </div>
+
+                <div class="pt-4">
+                    <button type="submit" 
+                            class="group relative w-full flex items-center justify-center px-8 py-5 font-black text-dark-900 bg-white hover:bg-neon rounded-2xl transition-all hover:shadow-[0_20px_40px_rgba(0,245,160,0.3)] active:scale-[0.98] text-lg uppercase italic tracking-tighter overflow-hidden">
+                        <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]"></div>
+                        <span class="relative flex items-center gap-3">
+                            Entrar na Plataforma
+                            <i class="fas fa-chevron-right text-sm transition-transform group-hover:translate-x-1"></i>
+                        </span>
+                    </button>
+                </div>
+            </form>
+
+            <div class="mt-8 text-center">
+                <p class="text-[10px] font-bold text-slate-600 uppercase tracking-widest">
+                    Polo UNINTER &copy; 2026 | Sistema Criptografado
+                </p>
+            </div>
         </div>
-        <div>
-            <label class="block text-sm font-bold text-slate-700 mb-1">Senha</label>
-            <input type="password" name="password" class="w-full border border-slate-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 outline-none">
-        </div>
-        <button type="submit" class="w-full bg-blue-700 hover:bg-blue-800 text-white font-bold py-3 rounded-lg transition-colors">
-            Entrar na Plataforma
-        </button>
-    </form>
+    </div>
 </div>
+
+<style>
+    /* Animação de Shimmer no botão */
+    @keyframes shimmer {
+        100% { transform: translateX(100%); }
+    }
+
+    /* Animação de entrada suave */
+    .animate-fadeIn {
+        animation: fadeIn 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Ajuste de Autofill do navegador (evita fundo amarelo feio) */
+    input:-webkit-autofill,
+    input:-webkit-autofill:hover, 
+    input:-webkit-autofill:focus {
+        -webkit-text-fill-color: white;
+        -webkit-box-shadow: 0 0 0px 1000px #0B0F1A inset;
+        transition: background-color 5000s ease-in-out 0s;
+    }
+</style>
 {% endblock %}

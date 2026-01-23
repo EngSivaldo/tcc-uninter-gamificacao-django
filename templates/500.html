@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="min-h-[75vh] flex flex-col items-center justify-center text-center px-6">
+    
+    <div class="relative mb-10">
+        <div class="absolute inset-0 bg-amber-400 blur-[80px] opacity-20 rounded-full animate-pulse"></div>
+        <i class="fas fa-tools text-[120px] text-slate-300 relative"></i>
+        <i class="fas fa-exclamation-triangle absolute bottom-0 right-0 text-4xl text-amber-500 animate-bounce"></i>
+    </div>
+
+    <h1 class="text-4xl md:text-5xl font-black text-slate-800 mb-4 tracking-tighter uppercase">Sobrecarga no Sistema</h1>
+    <p class="text-slate-500 max-w-lg mx-auto mb-12 leading-relaxed font-medium text-lg">
+        Tivemos um problema técnico ao sincronizar seu progresso. <br>
+        <span class="text-blue-700 font-bold">Fique tranquilo:</span> sua pontuação e medalhas estão seguras em nosso cofre de dados.
+    </p>
+
+    <button onclick="window.location.reload();" 
+            class="bg-emerald-600 hover:bg-emerald-700 text-white font-black py-5 px-16 rounded-[2rem] transition-all shadow-[0_20px_40px_rgba(5,150,105,0.25)] hover:scale-105 flex items-center justify-center gap-4 text-xl">
+        <i class="fas fa-sync-alt animate-spin-slow"></i>
+        TENTAR RECONECTAR
+    </button>
+</div>
+
+[Image of an internal server error 500 page mockup]
+
+<style>
+    .animate-spin-slow { animation: spin 3s linear infinite; }
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+</style>
+{% endblock %}

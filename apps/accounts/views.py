@@ -4,7 +4,15 @@ from django.db.models import Sum
 from apps.gamification.models import UserMedal
 from .models import User
 # Importe o modelo 
+from django.contrib.auth import login # Importante para logar o aluno na hora
 from django.contrib.auth import get_user_model
+# Arquivo: apps/accounts/views.py
+from django.shortcuts import render, redirect
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib import messages
+from django import forms
+from django.contrib.auth.forms import UserCreationForm
+from .models import User # Certifique-se que seu modelo User tem o campo 'ru'
 
 class DashboardView(LoginRequiredMixin, TemplateView):
     template_name = 'accounts/dashboard.html'
@@ -37,3 +45,28 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         context['ranking'] = ranking
         
         return context
+      
+# 1. Criamos um formulário que inclui o campo RU
+class StudentRegistrationForm(UserCreationForm):
+    ru = forms.CharField(label='Registro Acadêmico (RU)', max_length=20, 
+                         widget=forms.TextInput(attrs={'class': 'w-full bg-dark-900/50 border border-white/10 rounded-2xl px-12 py-4 text-white outline-none'}))
+
+    class Meta(UserCreationForm.Meta):
+        model = User
+        fields = UserCreationForm.Meta.fields + ('ru',)
+
+# 2. Atualizamos a view para usar este novo formulário
+def register(request):
+    if request.method == 'POST':
+        form = StudentRegistrationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            # LOGAR AUTOMATICAMENTE: O aluno já entra logado para pagar
+            login(request, user) 
+            messages.success(request, 'Conta criada com sucesso! Selecione sua forma de pagamento.')
+            # REDIRECIONAMENTO: Agora vai para o checkout que criaremos abaixo
+            return redirect('gamification:checkout') 
+    else:
+        form = StudentRegistrationForm()
+    
+    return render(request, 'accounts/register.html', {'form': form})

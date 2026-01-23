@@ -1,45 +1,75 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div x-data="{ open: false, selectedMedal: {} }" class="space-y-6">
+<div x-data="{ open: false, selectedMedal: {} }" class="space-y-10 animate-fadeIn relative pb-20">
     
-    <div class="bg-white rounded-xl shadow-sm p-6 border border-slate-200">
-        <h1 class="text-2xl font-bold text-slate-800">Painel do Estudante</h1>
-        <p class="text-slate-500">Visualize seu desempenho e metas de aprendizagem.</p>
-    </div>
+    <div class="absolute -top-24 -left-24 w-96 h-96 bg-accent/10 blur-[120px] rounded-full pointer-events-none"></div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <header class="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-end gap-6 border-b border-white/5 pb-8">
+        <div class="space-y-2">
+            <div class="flex items-center gap-3">
+                <span class="h-[2px] w-8 bg-accent"></span>
+                <span class="text-accent font-black text-[10px] uppercase tracking-[0.4em]">Central de Comando</span>
+            </div>
+            <h1 class="text-4xl md:text-6xl font-black text-white tracking-tighter uppercase italic">
+                Painel do <span class="text-transparent bg-clip-text bg-gradient-to-r from-accent to-neon">Estudante.</span>
+            </h1>
+        </div>
         
-        <div class="bg-white rounded-xl shadow-sm p-6 border-t-4 border-blue-600">
-            <div class="flex items-center justify-between mb-4">
-                <h3 class="text-xs font-bold text-slate-400 uppercase">Identificação Acadêmica</h3>
-                <i class="fas fa-id-card text-blue-600 text-xl"></i>
+        <div class="bg-dark-800 border border-white/10 px-6 py-3 rounded-2xl flex flex-col items-end shadow-2xl">
+            <span class="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1">Registro Acadêmico</span>
+            <span class="text-xl font-mono font-black text-neon tracking-tighter">RU: {{ user.ru|default:"4139872" }}</span>
+        </div>
+    </header>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        <div class="bg-dark-800/40 backdrop-blur-md border border-white/5 rounded-[2.5rem] p-8 flex flex-col justify-between hover:border-accent/30 transition-all group">
+            <div class="flex justify-between items-start mb-8">
+                <div class="p-4 bg-accent/10 rounded-2xl text-accent">
+                    <i class="fas fa-user-gear text-2xl"></i>
+                </div>
+                <span class="text-[9px] font-black text-slate-600 uppercase tracking-widest">Patente: Lead Dev</span>
             </div>
-            <p class="text-lg font-bold text-slate-800">{{ user.get_full_name|title|default:user.username|title }}</p>
-            <p class="text-sm text-blue-700 font-mono font-bold mt-1">RU: {{ user.ru }}</p>
+            <div>
+                <h3 class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Engenheiro(a) Ativo(a)</h3>
+                <p class="text-3xl font-black text-white tracking-tighter leading-none group-hover:text-accent transition-colors">
+                    {{ user.get_full_name|title|default:user.username|title }}
+                </p>
+            </div>
         </div>
 
-        <div class="bg-white rounded-xl shadow-sm p-6 border-t-4 border-yellow-500">
-            <div class="flex items-center justify-between mb-4">
-                <h3 class="text-xs font-bold text-slate-400 uppercase">Pontos de Experiência</h3>
-                <i class="fas fa-fire text-yellow-500 text-xl"></i>
+        <div class="bg-dark-800/40 backdrop-blur-md border border-white/5 rounded-[2.5rem] p-8 flex flex-col justify-between hover:border-neon/30 transition-all">
+            <div class="flex justify-between items-start mb-6">
+                <div class="p-4 bg-neon/10 rounded-2xl text-neon">
+                    <i class="fas fa-bolt text-2xl animate-pulse"></i>
+                </div>
+                <div class="text-right">
+                    <span class="text-[9px] font-black text-slate-500 uppercase tracking-widest block">Total Accumulate</span>
+                    <span class="text-2xl font-black text-white italic tracking-tighter">{{ total_points }} XP</span>
+                </div>
             </div>
-            <div class="flex items-baseline gap-2">
-                <span class="text-4xl font-black text-slate-800">{{ total_points }}</span>
-                <span class="text-yellow-600 font-bold">XP</span>
-            </div>
-            <div class="w-full bg-slate-100 h-2 rounded-full mt-4">
-              <div class="bg-yellow-500 h-2 rounded-full transition-all duration-500" style="width: {{ progress }}%"></div>
+            <div class="space-y-4">
+                <div class="flex justify-between items-end">
+                    <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Nível de Sincronia</span>
+                    <span class="text-xs font-black text-neon">{{ progress }}%</span>
+                </div>
+                <div class="h-3 w-full bg-dark-900 rounded-full overflow-hidden p-0.5 border border-white/5">
+                    <div class="h-full bg-gradient-to-r from-neon to-accent rounded-full shadow-[0_0_15px_rgba(0,245,160,0.5)] transition-all duration-1000" 
+                         style="width: {{ progress }}%"></div>
+                </div>
             </div>
         </div>
 
-        <div class="bg-white rounded-xl shadow-sm p-6 border-t-4 border-emerald-500">
-            <div class="flex items-center justify-between mb-4">
-                <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Conquistas Atuais</h3>
-                <i class="fas fa-award text-emerald-500 text-xl"></i>
+        <div class="bg-dark-800/40 backdrop-blur-md border border-white/5 rounded-[2.5rem] p-8">
+            <div class="flex justify-between items-center mb-8">
+                <h3 class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Conquistas de Unidade</h3>
+                <span class="px-2 py-1 bg-white/5 rounded text-[9px] font-bold text-slate-400 border border-white/5">
+                    {{ conquistas|length }} Medalhas
+                </span>
             </div>
             
-            <div class="grid grid-cols-4 gap-2">
+            <div class="grid grid-cols-4 gap-4">
                 {% for conquista in conquistas %}
                     <button @click="open = true; selectedMedal = { 
                                 name: '{{ conquista.medal.name|escapejs }}', 
@@ -47,44 +77,44 @@
                                 date: '{{ conquista.earned_at|date:'d/m/Y' }}',
                                 icon: '{% if conquista.medal.icon %}{{ conquista.medal.icon.url }}{% endif %}'
                              }" 
-                             class="flex flex-col items-center group cursor-pointer p-1 rounded-lg hover:bg-slate-50 transition-colors">
+                             class="medal-slot group relative aspect-square rounded-2xl bg-dark-900 border border-white/10 flex items-center justify-center p-2 transition-all hover:border-neon/50 hover:bg-dark-700">
                         
+                        <div class="absolute inset-0 bg-neon/5 opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl"></div>
+
                         {% if conquista.medal.icon %}
                             <img src="{{ conquista.medal.icon.url }}" alt="{{ conquista.medal.name }}" 
-                                 class="w-10 h-10 object-contain filter drop-shadow-sm group-hover:scale-110 transition-transform">
+                                 class="w-10 h-10 md:w-12 md:h-12 object-contain z-10 filter drop-shadow-[0_0_8px_rgba(255,255,255,0.2)] group-hover:drop-shadow-[0_0_12px_rgba(0,245,160,0.5)] group-hover:scale-110 transition-all duration-300">
                         {% else %}
-                            <div class="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center text-yellow-600">
-                                <i class="fas fa-medal text-lg"></i>
-                            </div>
+                            <i class="fas fa-award text-2xl text-slate-700 group-hover:text-neon transition-colors z-10"></i>
                         {% endif %}
-                        <span class="text-[8px] font-bold text-slate-600 mt-1 text-center leading-tight truncate w-full">
-                            {{ conquista.medal.name }}
-                        </span>
+
+                        <div class="absolute -top-10 scale-0 group-hover:scale-100 bg-white text-dark-950 text-[8px] font-black px-2 py-1 rounded shadow-xl whitespace-nowrap z-50 transition-all origin-bottom">
+                            {{ conquista.medal.name|upper }}
+                        </div>
                     </button>
                 {% empty %}
-                    <p class="col-span-4 text-slate-400 text-[10px] italic leading-tight">
-                        Explore a trilha de conhecimento para desbloquear medalhas.
-                    </p>
+                    <div class="col-span-4 py-4 text-center">
+                        <p class="text-[9px] font-bold text-slate-600 uppercase tracking-widest">Nenhuma conquista detectada.</p>
+                    </div>
                 {% endfor %}
             </div>
         </div>
     </div>
-    <div class="bg-white rounded-xl shadow-sm p-6 border border-slate-200 lg:col-span-1">
-        <div class="flex items-center justify-between mb-4">
-            <h3 class="text-sm font-bold text-slate-500 uppercase tracking-wider">Ranking Global</h3>
+
+    <div class="bg-dark-800/40 backdrop-blur-md border border-white/5 rounded-[3rem] p-10">
+        <div class="flex items-center justify-between mb-10">
+            <h3 class="text-xl font-black text-white italic uppercase tracking-tighter">Leaderboard Global</h3>
             <i class="fas fa-trophy text-yellow-500"></i>
         </div>
-        
-        <div class="space-y-4">
+        <div class="space-y-3">
             {% for estudante in ranking %}
-            <div class="flex items-center justify-between p-2 {% if estudante == user %}bg-blue-50 rounded-lg border border-blue-100{% endif %}">
-                <div class="flex items-center gap-3">
-                    <span class="text-xs font-black {% if forloop.counter == 1 %}text-yellow-500{% elif forloop.counter == 2 %}text-slate-400{% else %}text-slate-300{% endif %}">
-                        #{{ forloop.counter }}
-                    </span>
-                    <span class="text-sm font-bold text-slate-700">{{ estudante.username|title }}</span>
+            <div class="flex items-center justify-between p-4 rounded-2xl transition-all border border-transparent
+                        {% if estudante == user %}bg-accent/10 border-accent/20{% else %}hover:bg-white/[0.02]{% endif %}">
+                <div class="flex items-center gap-6">
+                    <span class="w-8 font-black text-xs {% if forloop.counter <= 3 %}text-neon{% else %}text-slate-700{% endif %}">#0{{ forloop.counter }}</span>
+                    <span class="text-sm font-black text-white">{{ estudante.username|title }}</span>
                 </div>
-                <span class="text-xs font-bold text-blue-600">{{ estudante.total_xp|default:0 }} XP</span>
+                <span class="text-sm font-black text-white">{{ estudante.total_xp|default:0 }} XP</span>
             </div>
             {% endfor %}
         </div>
@@ -92,38 +122,62 @@
 
     <div x-show="open" 
          x-transition:enter="transition ease-out duration-300"
-         x-transition:enter-start="opacity-0 scale-90"
-         x-transition:enter-end="opacity-100 scale-100"
-         class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm"
-         style="display: none;"> <div @click.away="open = false" 
-             class="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-8 text-center relative">
+         x-transition:enter-start="opacity-0 translate-y-8"
+         x-transition:enter-end="opacity-100 translate-y-0"
+         class="fixed inset-0 z-[150] flex items-center justify-center p-6 bg-dark-950/90 backdrop-blur-xl"
+         style="display: none;"> 
+         
+        <div @click.away="open = false" 
+             class="bg-dark-800 border border-white/10 rounded-[3rem] shadow-[0_0_100px_rgba(0,0,0,0.8)] max-w-sm w-full p-10 text-center relative overflow-hidden">
             
-            <button @click="open = false" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
+            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-neon to-transparent shadow-[0_0_15px_rgba(0,245,160,0.8)]"></div>
+
+            <button @click="open = false" class="absolute top-6 right-6 text-slate-500 hover:text-white transition-colors">
                 <i class="fas fa-times"></i>
             </button>
 
-            <template x-if="selectedMedal.icon">
-                <img :src="selectedMedal.icon" class="w-24 h-24 mx-auto mb-4 drop-shadow-lg">
-            </template>
-            <template x-if="!selectedMedal.icon">
-                <div class="w-24 h-24 bg-yellow-100 rounded-full flex items-center justify-center text-yellow-600 mx-auto mb-4">
-                    <i class="fas fa-award text-4xl"></i>
-                </div>
-            </template>
+            <div class="relative inline-block mb-8">
+                <div class="absolute inset-0 bg-neon/20 blur-[40px] rounded-full animate-pulse"></div>
+                <div class="absolute inset-0 bg-accent/10 blur-[20px] rounded-full"></div>
+                
+                <template x-if="selectedMedal.icon">
+                    <img :src="selectedMedal.icon" class="w-32 h-32 relative z-10 drop-shadow-[0_0_20px_rgba(255,255,255,0.4)] brightness-125">
+                </template>
+                <template x-if="!selectedMedal.icon">
+                    <div class="w-32 h-32 bg-dark-700 rounded-full flex items-center justify-center text-neon relative z-10 border border-white/10">
+                        <i class="fas fa-award text-6xl"></i>
+                    </div>
+                </template>
+            </div>
             
-            <h2 class="text-2xl font-black text-slate-800 mb-2" x-text="selectedMedal.name"></h2>
+            <h2 class="text-3xl font-black text-white tracking-tighter mb-2" x-text="selectedMedal.name"></h2>
             
-            <div class="bg-emerald-50 text-emerald-700 text-xs font-bold px-3 py-1 rounded-full inline-block mb-4">
-                Conquistada em <span x-text="selectedMedal.date"></span>
+            <div class="bg-neon/10 text-neon text-[10px] font-black px-4 py-2 rounded-full inline-block mb-6 uppercase tracking-[0.2em] border border-neon/20">
+                Data de Aquisição: <span x-text="selectedMedal.date"></span>
             </div>
 
-            <p class="text-slate-600 text-sm leading-relaxed mb-6" x-text="selectedMedal.desc"></p>
+            <p class="text-slate-400 text-sm leading-relaxed mb-10 italic" x-text="selectedMedal.desc"></p>
 
             <button @click="open = false" 
-                    class="w-full bg-slate-800 text-white font-bold py-3 rounded-xl hover:bg-slate-700 transition-colors">
-                Entendido!
+                    class="w-full bg-white text-dark-950 font-black py-4 rounded-2xl hover:bg-neon transition-all uppercase italic tracking-tighter shadow-xl">
+                Fechar Interface
             </button>
         </div>
     </div>
 </div>
+
+<style>
+    /* Filtro global para todas as medalhas aparecerem mais */
+    .medal-slot img {
+        filter: brightness(1.2) contrast(1.1) drop-shadow(0 0 5px rgba(255,255,255,0.1));
+    }
+    
+    .animate-pulse {
+        animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+    @keyframes pulse {
+        0%, 100% { opacity: 0.5; transform: scale(1); }
+        50% { opacity: 0.8; transform: scale(1.05); }
+    }
+</style>
 {% endblock %}
