@@ -1,114 +1,101 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="max-w-5xl mx-auto space-y-10 animate-fadeIn pt-10 pb-20">
+<div class="max-w-7xl mx-auto px-6 py-16 animate-fadeIn space-y-16">
     
-    <div class="bg-brand-blue/20 rounded-[3rem] p-10 border border-white/5 shadow-2xl relative overflow-hidden">
-        <div class="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
-            <div class="space-y-4">
-                <a href="/" class="inline-flex items-center gap-2 text-brand-neon text-[10px] font-black uppercase tracking-[0.3em] hover:opacity-70 transition-opacity">
+    <div class="bg-dark-800 rounded-[3.5rem] p-10 md:p-16 border border-white/5 shadow-2xl relative overflow-hidden">
+        <div class="relative z-10 flex flex-col md:flex-row justify-between items-center gap-10">
+            <div class="space-y-6 text-center md:text-left">
+                <a href="/" class="inline-flex items-center gap-2 text-neon text-[10px] font-black uppercase tracking-[0.4em] hover:opacity-70 transition-all">
                     <i class="fas fa-arrow-left"></i> Catálogo de Formações
                 </a>
-                <h1 class="text-5xl md:text-6xl font-black text-white tracking-tighter leading-none italic uppercase">
+                <h1 class="text-5xl md:text-7xl font-black text-white tracking-tighter leading-none italic uppercase">
                     {{ trail.title }}
                 </h1>
-                <p class="text-slate-300 text-lg leading-relaxed max-w-2xl">
+                <p class="text-slate-400 text-lg md:text-xl leading-relaxed max-w-2xl font-medium">
                     {{ trail.description }}
                 </p>
             </div>
             
-            <div class="hidden md:flex w-32 h-32 bg-brand-blue/30 rounded-[2rem] items-center justify-center border border-white/10 shadow-2xl rotate-3">
-                <i class="fas fa-medal text-5xl text-amber-400 drop-shadow-[0_0_15px_rgba(251,191,36,0.4)]"></i>
+            <div class="flex flex-col items-center gap-4">
+                <div class="w-40 h-40 bg-dark-900 rounded-[2.5rem] flex items-center justify-center border border-white/10 shadow-2xl rotate-3 group hover:rotate-0 transition-transform duration-500">
+                    <i class="fas fa-medal text-6xl text-amber-400 drop-shadow-[0_0_20px_rgba(251,191,36,0.5)] group-hover:scale-110 transition-transform"></i>
+                </div>
+                <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Recompensa da Trilha</span>
             </div>
         </div>
-        <div class="absolute -right-20 -top-20 w-80 h-80 bg-brand-neon/5 blur-[120px] rounded-full"></div>
+        <div class="absolute -right-20 -top-20 w-96 h-96 bg-neon/5 blur-[120px] rounded-full"></div>
     </div>
 
-    <div class="bg-brand-blue/10 rounded-[3rem] shadow-2xl p-10 border border-white/5 relative">
-        <div class="bg-brand-blue/10 rounded-[3rem] shadow-2xl p-10 border border-white/5 relative">
-            
-
-            <div class="space-y-6">
-                <div class="flex justify-between items-end">
-                    <div class="space-y-1">
-                        <p class="text-red-500 text-[10px] font-black uppercase tracking-[0.4em]">Status da Jornada</p>
-                        <h2 class="text-3xl font-black text-white italic tracking-tight uppercase">Progresso do Domínio</h2>
-                    </div>
-                    <div class="text-right">
-                        <span class="text-6xl font-black text-white tracking-tighter leading-none">
-                            {{ progress|floatformat:0 }}<span class="text-red-500 text-2xl">%</span>
-                        </span>
-                    </div>
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        <div class="lg:col-span-2 bg-dark-800 rounded-[3rem] p-10 border border-white/5 shadow-2xl flex flex-col justify-center space-y-8">
+            <div class="flex justify-between items-end">
+                <div class="space-y-1">
+                    <p class="text-neon text-[10px] font-black uppercase tracking-[0.4em]">Status da Missão</p>
+                    <h2 class="text-3xl font-black text-white italic tracking-tight uppercase">Progresso do Domínio</h2>
                 </div>
-            
-                <div class="relative w-full">
-                    <div class="absolute right-0 -top-6 flex flex-col items-center">
-                        <span class="text-[9px] font-black text-red-500 uppercase mb-1">Meta</span>
-                        <div class="w-px h-12 bg-red-500/40"></div>
-                    </div>
-            
-                    <div class="w-full bg-slate-950/80 rounded-full h-10 p-1.5 border border-white/10 shadow-inner relative overflow-hidden backdrop-blur-sm">
-                        
-                        <div class="bg-red-600 h-full rounded-full transition-all duration-1000 ease-out shadow-[0_0_25px_rgba(220,38,38,0.6)] relative overflow-hidden"
-                             style="width: {{ progress|floatformat:0 }}%;">
-                            
-                            <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 animate-pulse"></div>
-                        </div>
-            
-                        <div class="absolute right-2 top-1/2 -translate-y-1/2 w-1 h-4 bg-white/10 rounded-full"></div>
-                    </div>
-            
-                    <div class="flex justify-between mt-3 px-1">
-                        <span class="text-[8px] font-bold text-slate-500 uppercase tracking-widest">Início</span>
-                        <span class="text-[8px] font-bold text-red-500 uppercase tracking-widest">Alvo: {{ total_count }} Aulas</span>
-                    </div>
+                <div class="text-right">
+                    <span class="text-7xl font-black text-white tracking-tighter leading-none">
+                        {{ progress|floatformat:0 }}<span class="text-neon text-2xl">%</span>
+                    </span>
                 </div>
             </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
-            <div class="bg-brand-blue/20 rounded-2xl p-6 border border-white/5">
-                <p class="text-slate-500 text-[10px] font-black uppercase tracking-widest mb-1">Aulas Concluídas</p>
-                <p class="text-3xl font-black text-white">{{ completed_count }} <span class="text-sm text-slate-500">/ {{ total_count }}</span></p>
+        
+            <div class="relative w-full">
+                <div class="w-full bg-dark-950 rounded-full h-12 p-2 border border-white/5 shadow-inner relative overflow-hidden">
+                    <div class="bg-gradient-to-r from-accent to-neon h-full rounded-full transition-all duration-1000 ease-out shadow-[0_0_25px_rgba(0,255,160,0.4)] relative overflow-hidden"
+                         style="width: {{ progress|floatformat:0 }}%;">
+                        <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 animate-pulse"></div>
+                    </div>
+                </div>
+                <div class="flex justify-between mt-4 px-2">
+                    <span class="text-[9px] font-black text-slate-600 uppercase tracking-widest italic">Ponto de Partida</span>
+                    <span class="text-[9px] font-black text-neon uppercase tracking-widest italic">Objetivo: {{ total_count }} Módulos</span>
+                </div>
             </div>
-            <div class="bg-brand-blue/20 rounded-2xl p-6 border border-white/5">
-                <p class="text-slate-500 text-[10px] font-black uppercase tracking-widest mb-1">Sua Patente</p>
-                <p class="text-2xl font-black text-brand-neon italic uppercase">
+        </div>
+
+        <div class="grid gap-6">
+            <div class="bg-dark-800 rounded-[2rem] p-8 border border-white/5 shadow-xl flex flex-col justify-center">
+                <p class="text-slate-500 text-[10px] font-black uppercase tracking-widest mb-2">Sua Patente</p>
+                <p class="text-2xl font-black text-accent italic uppercase tracking-tighter">
                     {% if progress == 100 %}Mestre Engenheiro{% elif progress > 0 %}Em Evolução{% else %}Recruta{% endif %}
                 </p>
             </div>
-            <div class="bg-brand-blue/20 rounded-2xl p-6 border border-white/5">
-                <p class="text-slate-500 text-[10px] font-black uppercase tracking-widest mb-1">XP em Jogo</p>
-                <p class="text-3xl font-black text-brand-neon">+{{ trail.total_xp|default:1000 }} <span class="text-xs">XP</span></p>
+            <div class="bg-dark-800 rounded-[2rem] p-8 border border-white/5 shadow-xl flex flex-col justify-center">
+                <p class="text-slate-500 text-[10px] font-black uppercase tracking-widest mb-2">Experiência</p>
+                <p class="text-4xl font-black text-neon">+{{ trail.total_xp|default:1000 }} <span class="text-xs text-slate-500 font-bold uppercase">XP</span></p>
             </div>
         </div>
     </div>
 
-    <div class="space-y-6">
-        <h2 class="text-sm font-black text-slate-500 flex items-center gap-4 ml-4 uppercase tracking-[0.3em]">
-            <i class="fas fa-stream text-brand-neon text-xs"></i>
+    <div class="space-y-8">
+        <h2 class="text-sm font-black text-slate-500 flex items-center gap-4 ml-6 uppercase tracking-[0.4em]">
+            <i class="fas fa-layer-group text-neon text-xs"></i>
             Arquitetura do Conhecimento
         </h2>
 
         <div class="grid gap-4">
             {% for chapter in chapters %}
-            <div class="group bg-brand-blue/5 p-8 rounded-[2.5rem] border border-white/5 flex flex-col md:flex-row justify-between items-center hover:bg-brand-blue/10 hover:border-brand-neon/40 transition-all duration-300 relative overflow-hidden">
+            <div class="group bg-dark-800 p-8 rounded-[2.5rem] border border-white/5 flex flex-col md:flex-row justify-between items-center hover:bg-dark-700 hover:border-neon/30 transition-all duration-300 relative">
                 
                 <div class="flex items-center gap-8 w-full">
-                    <div class="w-16 h-16 bg-dark-950 rounded-2xl flex items-center justify-center font-black text-slate-600 text-xl group-hover:text-brand-neon transition-all border border-white/5">
+                    <div class="w-16 h-16 bg-dark-950 rounded-2xl flex items-center justify-center font-black text-slate-600 text-xl group-hover:text-neon transition-all border border-white/5">
                         {{ forloop.counter|stringformat:"02d" }}
                     </div>
 
                     <div class="flex-grow">
-                        <h3 class="text-2xl font-black text-white group-hover:text-brand-neon transition-colors tracking-tight italic uppercase">
+                        <h3 class="text-2xl font-black text-white group-hover:text-neon transition-colors tracking-tight italic uppercase leading-tight">
                             {{ chapter.title }}
                         </h3>
                         <div class="flex items-center gap-4 mt-2">
-                            <span class="text-[10px] font-black text-brand-neon uppercase tracking-widest">
-                                <i class="fas fa-bolt mr-1"></i>+{{ chapter.xp_value }} XP
+                            <span class="text-[10px] font-black text-neon uppercase tracking-widest flex items-center gap-1">
+                                <i class="fas fa-bolt text-[8px]"></i> +{{ chapter.xp_value }} XP
                             </span>
                             {% if chapter.is_premium %}
-                            <span class="text-[9px] font-black bg-brand-neon/10 text-brand-neon px-2 py-0.5 rounded border border-brand-neon/20 uppercase">
-                                <i class="fas fa-crown text-[8px] mr-1"></i> Plus
+                            <span class="text-[8px] font-black bg-accent/10 text-accent px-3 py-1 rounded-full border border-accent/20 uppercase tracking-tighter">
+                                <i class="fas fa-crown mr-1"></i> Conteúdo Plus
                             </span>
                             {% endif %}
                         </div>
@@ -118,20 +105,20 @@
                 <div class="mt-8 md:mt-0 w-full md:w-auto">
                     {% if chapter.is_premium and not user.is_plus %}
                         <a href="{% url 'gamification:checkout' %}" 
-                           class="w-full md:w-auto bg-white/5 text-white/50 border border-white/10 font-black py-4 px-12 rounded-2xl transition-all flex items-center justify-center gap-3 hover:bg-white/10 hover:text-white uppercase text-xs tracking-widest">
-                            <i class="fas fa-lock"></i> Liberar Aula
+                           class="w-full md:w-auto bg-dark-900 text-slate-500 border border-white/5 font-black py-5 px-10 rounded-2xl flex items-center justify-center gap-3 hover:bg-white/5 hover:text-white transition-all uppercase text-[10px] tracking-widest">
+                            <i class="fas fa-lock text-xs"></i> Liberar Acesso
                         </a>
                     {% else %}
                         <a href="{% url 'gamification:chapter_detail' chapter.id %}" 
-                           class="btn-moss w-full md:w-auto py-4 px-12 rounded-2xl flex items-center justify-center gap-3 uppercase text-xs tracking-widest font-black shadow-lg">
-                            Estudar <i class="fas fa-chevron-right"></i>
+                           class="w-full md:w-auto bg-white text-dark-900 font-black py-5 px-12 rounded-2xl flex items-center justify-center gap-3 hover:bg-neon transition-all hover:shadow-[0_15px_30px_rgba(0,245,160,0.3)] hover:-translate-y-1 uppercase text-[10px] tracking-widest">
+                            Iniciar Aula <i class="fas fa-chevron-right text-[8px]"></i>
                         </a>
                     {% endif %}
                 </div>
             </div>
             {% empty %}
-            <div class="text-center py-20 bg-brand-blue/5 rounded-[3rem] border-2 border-dashed border-white/10">
-                <p class="text-slate-500 font-black uppercase tracking-widest">Aguardando novos módulos...</p>
+            <div class="text-center py-24 bg-dark-800/50 rounded-[4rem] border-2 border-dashed border-white/5">
+                <p class="text-slate-600 font-black uppercase tracking-[0.3em] italic">Módulos em desenvolvimento...</p>
             </div>
             {% endfor %}
         </div>
@@ -139,7 +126,8 @@
 </div>
 
 <style>
-    .animate-fadeIn { animation: fadeIn 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+    /* Suavização de entrada */
+    .animate-fadeIn { animation: fadeIn 0.8s cubic-bezier(0.2, 0.8, 0.2, 1); }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
 </style>
 {% endblock %}
