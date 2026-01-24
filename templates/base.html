@@ -39,7 +39,6 @@
     </script>
 
     <style>
-        /* DESIGN REFINADO: Mantendo suas cores originais com mais profundidade */
         body {
             background-color: #070707;
             background-image: 
@@ -57,7 +56,6 @@
             100% { background-position: 5% 5%; }
         }
 
-        /* Nav com a sua cor #000074 e Glassmorphism */
         .glass-nav {
             background: rgba(0, 0, 0, 0.9);
             backdrop-filter: blur(12px);
@@ -65,15 +63,11 @@
             box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
         }
 
-        /* FIX DE CONTRASTE: Garante leitura em cards brancos sem quebrar a lógica */
-        .bg-white, .bg-slate-50, .force-dark {
-            color: #0F172A !important;
-        }
+        .bg-white, .bg-slate-50, .force-dark { color: #0F172A !important; }
         .bg-white p, .bg-white span, .bg-white h1, .bg-white h2, .bg-white h3, .bg-white div {
             color: #1E293B !important;
         }
 
-        /* Estilização de Scrollbar */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #000074; }
         ::-webkit-scrollbar-thumb { 
@@ -81,13 +75,11 @@
             border-radius: 10px;
         }
 
-        /* Footer com sua cor #2c3e82 */
         .footer-custom {
             background-color: #0a0a0a;
             border-top: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        /* Estilo para Alertas do Django */
         .alert-toast {
             background: #000074;
             border-left: 4px solid #00FF9D;
@@ -122,35 +114,44 @@
                 </a>
                 
                 <div class="hidden lg:flex items-center gap-8 border-l border-white/10 pl-8">
-                    <a href="/" class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-300 hover:text-hashtag-neon transition-colors">Catálogo</a>
+                    <a href="{% url 'gamification:trail_list' %}" class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-300 hover:text-hashtag-neon transition-colors">Catálogo</a>
+                    {% if user.is_authenticated %}
                     <a href="{% url 'accounts:dashboard' %}" class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-300 hover:text-hashtag-orange transition-colors">Meu Progresso</a>
+                    {% endif %}
                 </div>
             </div>
             
             <div class="flex items-center gap-6">
-                {% if user.is_plus %}
-                <div class="hidden md:flex items-center gap-2 bg-hashtag-orange/10 border border-hashtag-orange/40 px-3 py-1.5 rounded-full">
-                    <i class="fas fa-crown text-[10px] text-hashtag-orange animate-pulse"></i>
-                    <span class="text-[9px] font-black text-hashtag-orange uppercase tracking-widest">Plus Account</span>
-                </div>
+                {% if user.is_authenticated %}
+                    {% if user.is_plus %}
+                    <div class="hidden md:flex items-center gap-2 bg-hashtag-orange/10 border border-hashtag-orange/40 px-3 py-1.5 rounded-full">
+                        <i class="fas fa-crown text-[10px] text-hashtag-orange animate-pulse"></i>
+                        <span class="text-[9px] font-black text-hashtag-orange uppercase tracking-widest">Plus Account</span>
+                    </div>
+                    {% endif %}
+
+                    <div class="bg-dark-950/40 border border-white/10 pl-4 pr-1 py-1 rounded-2xl flex items-center gap-4">
+                        <div class="flex flex-col items-end leading-none">
+                            <span class="text-[8px] font-black text-slate-500 uppercase mb-1 italic">Engenheiro(a)</span>
+                            <span class="text-xs font-bold text-white">{{ user.username|title }}</span>
+                        </div>
+                        <div class="bg-hashtag-neon text-dark-950 px-4 py-2 rounded-xl font-black text-xs shadow-[0_0_15px_rgba(0,255,157,0.2)]">
+                            <i class="fas fa-bolt mr-1"></i> {{ user.xp|default:0 }} XP
+                        </div>
+                    </div>
+
+                    <form action="{% url 'accounts:logout' %}" method="post" class="m-0">
+                        {% csrf_token %}
+                        <button type="submit" class="bg-white/5 hover:bg-red-500/20 text-slate-400 hover:text-red-400 p-3 rounded-xl transition-all border border-white/5">
+                            <i class="fas fa-power-off text-sm"></i>
+                        </button>
+                    </form>
+                {% else %}
+                    <a href="{% url 'accounts:login' %}" class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-300 hover:text-hashtag-neon transition-colors">Entrar</a>
+                    <a href="{% url 'accounts:register' %}" class="bg-hashtag-neon text-dark-950 px-6 py-2.5 rounded-xl font-black text-[10px] uppercase tracking-tighter shadow-lg hover:scale-105 transition-all">
+                        Iniciar Jornada
+                    </a>
                 {% endif %}
-
-                <div class="bg-dark-950/40 border border-white/10 pl-4 pr-1 py-1 rounded-2xl flex items-center gap-4">
-                    <div class="flex flex-col items-end leading-none">
-                        <span class="text-[8px] font-black text-slate-500 uppercase mb-1 italic">Engenheiro(a)</span>
-                        <span class="text-xs font-bold text-white">{{ user.username|title }}</span>
-                    </div>
-                    <div class="bg-hashtag-neon text-dark-950 px-4 py-2 rounded-xl font-black text-xs shadow-[0_0_15px_rgba(0,255,157,0.2)]">
-                        <i class="fas fa-bolt mr-1"></i> {{ user.xp|default:0 }} XP
-                    </div>
-                </div>
-
-                <form action="{% url 'accounts:logout' %}" method="post" class="m-0">
-                    {% csrf_token %}
-                    <button type="submit" class="bg-white/5 hover:bg-red-500/20 text-slate-400 hover:text-red-400 p-3 rounded-xl transition-all border border-white/5">
-                        <i class="fas fa-power-off text-sm"></i>
-                    </button>
-                </form>
             </div>
         </div>
     </nav>

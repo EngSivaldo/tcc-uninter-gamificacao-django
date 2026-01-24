@@ -16,3 +16,15 @@ urlpatterns = [
     # Fluxo de Novos Alunos (Cadastro/Registro)
     path('register/', views.register, name='register'),
 ]
+
+
+
+
+
+
+#1. O Território de Identidade (apps/accounts/urls.py)
+# Este arquivo cuida de quem é o usuário:
+
+# register/: Usa o seu formulário customizado com RU para criar novos alunos.
+
+# login/logout/: Gerencia a entrada e saída usando o sistema nativo do Django.

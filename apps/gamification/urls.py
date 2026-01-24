@@ -4,6 +4,10 @@ from . import views
 app_name = 'gamification'
 
 urlpatterns = [
+    # --- ROTA RAIZ (PONTO DE ENTRADA INTELIGENTE) ---
+    # É aqui que o Django decide: Aluno Logado (Home) vs Visitante (Index)
+    path('', views.index, name='index'), 
+
     # Rotas de Navegação de Conteúdo
     path('trilhas/', views.trail_list, name='trail_list'),
     path('trilha/<int:trail_id>/', views.trail_detail, name='trail_detail'),
@@ -15,3 +19,14 @@ urlpatterns = [
     # Rota de Conversão e Vendas (Pilar da Monetização)
     path('checkout/', views.checkout, name='checkout'),
 ]
+
+
+
+
+
+# 2. O Território de Conteúdo (apps/gamification/urls.py)
+# O arquivo que você mostrou anteriormente cuida do que o usuário faz:
+
+# path('', ...): A porta de entrada inteligente que decide se mostra a propaganda (Landing Page) ou o catálogo de cursos (Hub/Home).
+
+# trilhas/, capitulo/: A navegação pelas aulas e conteúdos técnicos.

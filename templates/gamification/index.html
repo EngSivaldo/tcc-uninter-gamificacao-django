@@ -16,7 +16,9 @@
                     <p class="text-[9px] font-black text-slate-500 uppercase tracking-widest leading-none">Termina em:</p>
                     <p class="text-sm font-mono font-black text-white" x-text="timer"></p>
                 </div>
-                <button class="bg-white text-dark-950 px-6 py-2 rounded-xl text-xs font-black uppercase tracking-tighter hover:bg-neon transition-all">Economizar Agora</button>
+                <a href="{% url 'gamification:checkout' %}" class="bg-white text-dark-950 px-6 py-2 rounded-xl text-xs font-black uppercase tracking-tighter hover:bg-neon transition-all">
+                    Economizar Agora
+                </a>
             </div>
         </div>
     </section>
@@ -31,14 +33,16 @@
                 Inscreva-se para desenvolver habilidades prontas para o trabalho em instituições de nível mundial com o Coursera Coach.
             </p>
             <div class="flex flex-wrap justify-center lg:justify-start gap-4">
-                <button class="bg-neon text-dark-950 px-10 py-5 rounded-2xl font-black text-lg uppercase italic tracking-tighter shadow-2xl hover:scale-105 transition-all">Iniciar Jornada Gratuita</button>
-                <button class="bg-dark-800 text-white border border-white/10 px-10 py-5 rounded-2xl font-black text-lg uppercase italic tracking-tighter hover:bg-dark-700 transition-all">Ver Catálogo</button>
+                <a href="{% url 'accounts:register' %}" class="bg-neon text-dark-950 px-10 py-5 rounded-2xl font-black text-lg uppercase italic tracking-tighter shadow-2xl hover:scale-105 transition-all text-center">
+                    Iniciar Jornada Gratuita
+                </a>
+                <a href="{% url 'gamification:trail_list' %}" class="bg-dark-800 text-white border border-white/10 px-10 py-5 rounded-2xl font-black text-lg uppercase italic tracking-tighter hover:bg-dark-700 transition-all text-center">
+                    Ver Catálogo
+                </a>
             </div>
             <p class="text-[10px] font-bold text-slate-600 uppercase tracking-[0.3em]">77% dos alunos relatam benefícios na carreira.</p>
         </div>
-
         <div class="relative group">
-            <div class="absolute inset-0 bg-accent/20 blur-[80px] rounded-full group-hover:bg-accent/30 transition-all"></div>
             <div class="relative bg-dark-800 border border-white/10 rounded-[3rem] p-4 shadow-2xl overflow-hidden aspect-video flex items-center justify-center">
                 <img src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=1200" class="w-full h-full object-cover rounded-[2.5rem] opacity-50">
                 <div class="absolute inset-0 flex items-center justify-center">
@@ -55,14 +59,13 @@
             <h2 class="text-3xl font-black text-white uppercase italic tracking-tighter">O que assinantes estão conseguindo</h2>
             <p class="text-slate-500 font-bold text-xs uppercase tracking-widest">Histórias reais de engenheiros de software</p>
         </div>
-
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div class="bg-dark-800/40 p-8 rounded-[2.5rem] border border-white/5 space-y-6 hover:border-accent/30 transition-all">
                 <div class="flex items-center gap-4">
                     <div class="w-12 h-12 rounded-full bg-slate-700 border-2 border-accent"></div>
                     <div>
                         <p class="text-white font-black text-sm uppercase">Abigail P.</p>
-                        <p class="text-[9px] text-slate-500 font-black uppercase">Subscribed since 2024</p>
+                        <p class="text-[9px] text-slate-500 font-black uppercase">Inscrito desde 2024</p>
                     </div>
                 </div>
                 <p class="text-slate-400 text-sm leading-relaxed italic">
@@ -96,45 +99,113 @@
         </div>
     </section>
 
-    <section class="max-w-7xl mx-auto px-6">
-        <div class="bg-dark-800/60 rounded-[4rem] border border-white/5 p-12 lg:p-20 relative overflow-hidden">
-            <div class="absolute -right-20 -bottom-20 w-96 h-96 bg-neon/10 blur-[150px] rounded-full"></div>
-            
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+    <section id="pricing" class="max-w-5xl mx-auto scroll-mt-24">
+        <div class="bg-white text-dark-950 rounded-[4rem] p-12 lg:p-20 shadow-[0_50px_100px_rgba(0,0,0,0.5)] relative overflow-hidden group">
+            <div class="absolute -right-20 -bottom-20 w-80 h-80 bg-neon/10 blur-[100px] rounded-full"></div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center relative z-10">
                 <div class="space-y-8">
-                    <h2 class="text-5xl font-black text-white tracking-tighter uppercase leading-none">
-                        Planos para você <br> ou sua <span class="text-accent">equipe.</span>
+                    <span class="bg-dark-950 text-white text-[9px] font-black px-4 py-2 rounded-full uppercase tracking-[0.4em]">Inscrições Abertas</span>
+                    <h2 class="text-5xl md:text-6xl font-black tracking-tighter uppercase leading-[0.9] italic">
+                        Plano <br> <span class="text-blue-600">Gamifica</span> <br> PLUS.
                     </h2>
-                    <p class="text-slate-400 font-medium italic">Combine flexibilidade e economia com metas de longo prazo.</p>
-                    
-                    <ul class="space-y-4">
-                        <li class="flex items-center gap-3 text-sm text-slate-300">
-                            <i class="fas fa-check-circle text-neon"></i> Acesso a 10.000+ cursos
-                        </li>
-                        <li class="flex items-center gap-3 text-sm text-slate-300">
-                            <i class="fas fa-check-circle text-neon"></i> Projetos práticos e laboratórios
-                        </li>
-                        <li class="flex items-center gap-3 text-sm text-slate-300">
-                            <i class="fas fa-check-circle text-neon"></i> Certificados ilimitados
-                        </li>
-                    </ul>
+                    <p class="text-slate-600 font-bold text-sm leading-relaxed max-w-xs italic uppercase">
+                        Acesso ilimitado a 10.000+ cursos e certificados oficiais da Uninter.
+                    </p>
                 </div>
-
-                <div class="bg-white text-dark-950 p-10 rounded-[3rem] shadow-2xl flex flex-col justify-between h-full hover:scale-105 transition-all">
-                    <div>
-                        <span class="bg-dark-950 text-white text-[9px] font-black px-4 py-1.5 rounded-full uppercase tracking-widest mb-6 inline-block">Popular Anual</span>
-                        <h4 class="text-2xl font-black uppercase italic tracking-tighter mb-2">Coursera Plus Anual</h4>
-                        <div class="flex items-baseline gap-2 mb-8">
-                            <span class="text-4xl font-black tracking-tighter">US$ 119,50</span>
-                            <span class="text-slate-500 font-bold text-sm">/Ano</span>
-                        </div>
+                <div class="flex flex-col items-center lg:items-end text-center lg:text-right space-y-6">
+                    <div class="space-y-1">
+                        <p class="text-slate-400 text-xs font-black line-through uppercase">US$ 239.00</p>
+                        <p class="text-7xl font-black tracking-tighter text-dark-950">US$ 119.50</p>
+                        <p class="text-[10px] font-black text-blue-600 uppercase tracking-widest font-mono">BILLING_CYCLE: ANNUAL</p>
                     </div>
-                    <button class="w-full bg-dark-950 text-white py-5 rounded-2xl font-black uppercase italic tracking-tighter shadow-xl hover:bg-neon hover:text-dark-950 transition-all">
-                        Adquirir Plano Plus
-                    </button>
-                    <p class="text-center text-[10px] text-slate-400 mt-6 font-bold uppercase tracking-widest">Garantia de 14 dias para devolução.</p>
+                    <a href="{% url 'accounts:register' %}" 
+                       class="w-full bg-dark-950 text-white py-6 rounded-[2rem] font-black text-xl uppercase italic tracking-tighter shadow-2xl hover:scale-105 transition-all hover:bg-blue-700 flex items-center justify-center gap-3">
+                        Assinar Agora <i class="fas fa-shield-alt text-sm"></i>
+                    </a>
+                    <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none">Oferta válida até 02/02/2026</p>
                 </div>
             </div>
+        </div>
+    </section>
+
+    <section class="max-w-7xl mx-auto px-6 space-y-12">
+        <div class="flex items-center justify-between border-b border-white/5 pb-6">
+            <div class="flex items-center gap-4">
+                <div class="w-2 h-8 bg-neon rounded-full"></div>
+                <h2 class="text-3xl font-black text-white italic uppercase tracking-tighter">Arsenal Tecnológico</h2>
+            </div>
+            <span class="text-[10px] font-black text-slate-500 uppercase tracking-widest italic">{{ all_trails.count }} Trilhas Disponíveis</span>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {% for trail in all_trails %}
+            <div class="group relative bg-dark-800/40 border border-white/10 rounded-[2.5rem] p-8 flex items-center justify-between hover:bg-dark-800 transition-all overflow-hidden shadow-xl">
+                <div class="absolute inset-0 bg-gradient-to-r from-neon/0 to-neon/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <div class="relative z-10 space-y-2">
+                    <h4 class="text-xl font-black text-white uppercase italic tracking-tighter group-hover:text-neon transition-colors">
+                        {{ trail.title }}
+                    </h4>
+                    <div class="flex items-center gap-4 text-slate-500 text-[9px] font-black uppercase tracking-widest italic">
+                        <span><i class="fas fa-book-open mr-1 text-accent"></i> {{ trail.chapters.count }} Aulas</span>
+                        <span><i class="fas fa-bolt mr-1 text-neon"></i> {{ trail.total_xp }} XP</span>
+                    </div>
+                </div>
+                <a href="{% url 'gamification:trail_detail' trail.id %}" class="relative z-10 w-12 h-12 rounded-full border border-white/10 flex items-center justify-center group-hover:bg-neon group-hover:text-dark-950 transition-all shadow-lg">
+                    <i class="fas fa-chevron-right text-xs"></i>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section class="max-w-7xl mx-auto px-6 space-y-12 pt-20 border-t border-white/5">
+        <div class="text-center space-y-4">
+            <h2 class="text-4xl font-black text-white uppercase italic tracking-tighter">
+                Sua Evolução <span class="text-accent">Começa Aqui</span>
+            </h2>
+            <p class="text-slate-500 font-bold text-xs uppercase tracking-widest italic">
+                Trilhas completas com certificação e projetos práticos
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+            {% for trail in all_trails %}
+            <div class="group bg-dark-800/40 border border-white/5 rounded-[2.5rem] overflow-hidden hover:border-neon/30 transition-all flex flex-col shadow-2xl">
+                <div class="relative aspect-video overflow-hidden">
+                    {% if trail.image %}
+                        <img src="{{ trail.image.url }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 opacity-80 group-hover:opacity-100">
+                    {% else %}
+                        <div class="w-full h-full bg-gradient-to-br from-dark-700 to-dark-900 flex items-center justify-center">
+                            <i class="fas fa-code text-4xl text-white/10"></i>
+                        </div>
+                    {% endif %}
+                    <div class="absolute top-4 right-4 bg-dark-950/80 backdrop-blur-md border border-neon/20 px-3 py-1 rounded-full">
+                        <span class="text-[10px] font-black text-neon uppercase tracking-tighter">{{ trail.total_xp }} XP</span>
+                    </div>
+                </div>
+
+                <div class="p-8 space-y-6 flex-grow flex flex-col">
+                    <div class="space-y-2">
+                        <h4 class="text-xl font-black text-white uppercase italic leading-tight group-hover:text-neon transition-colors">
+                            {{ trail.title }}
+                        </h4>
+                        <p class="text-slate-500 text-xs font-medium leading-relaxed line-clamp-2">
+                            Domine as principais ferramentas de {{ trail.title }} com foco total no mercado de trabalho.
+                        </p>
+                    </div>
+
+                    <div class="pt-4 border-t border-white/5 flex items-center justify-between mt-auto">
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-book-open text-accent text-xs"></i>
+                            <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">{{ trail.chapters.count }} Aulas</span>
+                        </div>
+                        
+                        <a href="{% url 'gamification:trail_detail' trail.id %}" class="bg-white text-dark-950 px-6 py-2.5 rounded-xl font-black text-[10px] uppercase italic tracking-tighter hover:bg-neon transition-all">
+                            Saiba Mais
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
         </div>
     </section>
 

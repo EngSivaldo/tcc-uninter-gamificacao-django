@@ -37,6 +37,8 @@ class Trail(TimestampedModel):
     title = models.CharField(max_length=200, verbose_name="Título da Trilha")
     slug = models.SlugField(max_length=200, unique=True, null=True, blank=True)
     description = models.TextField(verbose_name="Descrição")
+    image = models.ImageField(upload_to='trails/', blank=True, null=True)
+    total_xp = models.IntegerField(default=0)
     is_premium = models.BooleanField(default=False, verbose_name="Trilha Premium") # Para futuras assinaturas de trilhas inteiras
 
     def save(self, *args, **kwargs):
@@ -109,8 +111,13 @@ class UserProgress(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     chapter = models.ForeignKey(Chapter, on_delete=models.CASCADE)
     completed_at = models.DateTimeField(auto_now_add=True)
+    
+    # ESTA LINHA É O QUE ESTÁ FALTANDO:
+    updated_at = models.DateTimeField(auto_now=True) 
 
     class Meta:
         unique_together = ('user', 'chapter')
+        # Agora o Django vai encontrar o campo aqui embaixo:
+        ordering = ['-updated_at'] 
         verbose_name = "Progresso do Aluno"
         verbose_name_plural = "Progressos dos Alunos"

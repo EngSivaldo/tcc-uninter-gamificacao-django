@@ -110,8 +110,13 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # 12. Rotas de Login/Redirecionamento
 LOGIN_URL = 'accounts:login'
-LOGIN_REDIRECT_URL = 'accounts:dashboard'
-LOGOUT_REDIRECT_URL = 'accounts:login'
+
+# O aluno loga e cai no "Porteiro Inteligente" (gamification:index)
+# que decide se mostra o 'home.html' (Continuar Estudando)
+LOGIN_REDIRECT_URL = 'gamification:index'
+
+# Ao sair, ele volta para a raiz, onde verá a sua Landing Page de vendas
+LOGOUT_REDIRECT_URL = 'gamification:index'
 
 # 13. Configurações de Campo Padrão
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

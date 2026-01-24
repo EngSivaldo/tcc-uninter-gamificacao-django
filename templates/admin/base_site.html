@@ -1,0 +1,19 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} | Gamifica UNINTER{% endblock %}
+
+{% block extrastyle %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'css/admin_modern.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+{% endblock %}
+
+{% block branding %}
+    <h1 id="site-name">
+        <a href="{% url 'admin:index' %}" style="display: flex; align-items: center; gap: 10px; font-weight: 900; color: #00F5A0; text-transform: uppercase; letter-spacing: -1px;">
+            <i class="fas fa-graduation-cap"></i>
+            GAMIFICA <span style="color: #ffffff;">UNINTER</span>
+        </a>
+    </h1>
+{% endblock %}

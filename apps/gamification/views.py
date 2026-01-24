@@ -6,13 +6,57 @@ from django.utils.safestring import mark_safe
 from django.http import HttpRequest, HttpResponse
 import markdown
 import logging
+from django.utils import timezone
+
 
 # Importações dos modelos do seu domínio
 from .models import Trail, Chapter, PointTransaction, UserProgress
 from .utils import check_user_medals
 
 # Configuração de Logs para monitorar erros de produção
-logger = logging.getLogger(__name__)
+
+def index(request):
+    # 1. BUSCA GLOBAL: Buscamos as trilhas antes de qualquer check
+    # Assim elas ficam disponíveis para logados e não logados.
+    all_trails = Trail.objects.all()
+
+    # CASO 1: VISITANTE (Não Logado)
+    if not request.user.is_authenticated:
+        # AJUSTE AQUI: Agora passamos as trilhas para a Landing Page
+        return render(request, 'gamification/index.html', {'all_trails': all_trails})
+
+    # CASO 2: ALUNO (Logado)
+    user = request.user
+    
+    # Busca o último capítulo para o "Continuar Estudando"
+    last_progress = UserProgress.objects.filter(user=user).select_related('chapter__trail').order_by('-updated_at').first()
+    
+    # Cálculo de Progresso na Trilha Atual
+    current_trail_progress = 0
+    if last_progress:
+        trail = last_progress.chapter.trail
+        total_ch = trail.chapters.count()
+        done_ch = UserProgress.objects.filter(user=user, chapter__trail=trail).count()
+        current_trail_progress = int((done_ch / total_ch) * 100) if total_ch > 0 else 0
+
+    # Cálculo de Sincronia Global
+    total_sys = Chapter.objects.count()
+    total_done = UserProgress.objects.filter(user=user).count()
+    overall_progress = int((total_done / total_sys) * 100) if total_sys > 0 else 0
+
+    # Sugestões de Trilhas
+    started_ids = UserProgress.objects.filter(user=user).values_list('chapter__trail_id', flat=True).distinct()
+    suggested_trails = Trail.objects.exclude(id__in=started_ids)[:4]
+
+    context = {
+        'last_progress': last_progress,
+        'current_trail_progress': current_trail_progress, 
+        'overall_progress': overall_progress,           
+        'suggested_trails': suggested_trails,
+        'all_trails': all_trails, # Também disponível no Hub de Estudos
+    }
+    
+    return render(request, 'gamification/home.html', context)
 
 @login_required
 def trail_list(request: HttpRequest) -> HttpResponse:
@@ -20,30 +64,30 @@ def trail_list(request: HttpRequest) -> HttpResponse:
     trails = Trail.objects.all()
     return render(request, 'gamification/trail_list.html', {'trails': trails})
 
-@login_required
-def trail_detail(request: HttpRequest, trail_id: int) -> HttpResponse:
-    """
-    Exibe os capítulos de uma trilha com cálculo de progresso matemático.
-    A fórmula utilizada para o progresso é:
-    $$P = \left( \frac{C_{comp}}{C_{total}} \right) \times 100$$
-    """
+from django.shortcuts import render, get_object_or_404
+from django.http import HttpRequest, HttpResponse
+from .models import Trail, UserProgress
+
+# 1. REMOVEMOS o @login_required para permitir a "vitrine" para visitantes
+def trail_detail(request, trail_id):
     trail = get_object_or_404(Trail, id=trail_id)
-    chapters = trail.chapters.all()
+    chapters = trail.chapters.all().order_by('id')
     
-    total_chapters = chapters.count()
-    completed_chapters = UserProgress.objects.filter(
-        user=request.user, 
-        chapter__trail=trail
-    ).count()
-    
-    progress_percentage = (completed_chapters / total_chapters * 100) if total_chapters > 0 else 0
-    
+    # Se o usuário está logado, calculamos o progresso para a barra vermelha
+    progress = 0
+    if request.user.is_authenticated:
+        completed = UserProgress.objects.filter(user=request.user, chapter__trail=trail).count()
+        if chapters.count() > 0:
+            progress = (completed / chapters.count()) * 100
+
     context = {
         'trail': trail,
         'chapters': chapters,
-        'progress': progress_percentage,
-        'completed_count': completed_chapters,
-        'total_count': total_chapters,
+        'progress': progress,
+        'total_count': chapters.count(),
+        # Aqui você pode passar um preço fixo ou vir do banco
+        'price': "119,90", 
+        'old_price': "497,00"
     }
     return render(request, 'gamification/trail_detail.html', context)
 

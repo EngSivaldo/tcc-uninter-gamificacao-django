@@ -1,0 +1,79 @@
+/* --- AJUSTES DE CONTRASTE E ACESSIBILIDADE --- */
+
+/* Deixa as caixas de texto visíveis e elegantes */
+input[type="text"],
+input[type="password"],
+input[type="number"],
+input[type="email"],
+select,
+textarea {
+  background: #1e253a !important; /* Um tom mais claro que o fundo */
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 12px !important;
+  color: #ffffff !important;
+  padding: 12px 15px !important;
+  transition: all 0.3s ease !important;
+}
+
+/* Efeito de foco neon ao clicar no campo */
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: #00f5a0 !important;
+  box-shadow: 0 0 0 3px rgba(0, 245, 160, 0.1) !important;
+  outline: none !important;
+}
+
+/* --- HIERARQUIA DE BOTÕES (UX) --- */
+
+/* O botão principal de SALVAR (o mais importante) */
+.submit-row input[name="_save"] {
+  background: #00f5a0 !important;
+  color: #0b0f1a !important;
+  font-weight: 900 !important;
+  padding: 12px 30px !important;
+  border-radius: 14px !important;
+  box-shadow: 0 10px 20px rgba(0, 245, 160, 0.2) !important;
+}
+
+/* Botões secundários (mais discretos para não brigar com o principal) */
+.submit-row input[name="_addanother"],
+.submit-row input[name="_continue"] {
+  background: transparent !important;
+  border: 1px solid rgba(0, 245, 160, 0.3) !important;
+  color: #00f5a0 !important;
+  opacity: 0.8 !important;
+}
+
+.submit-row input:hover {
+  transform: translateY(-2px);
+  opacity: 1 !important;
+}
+
+/* --- ESPAÇAMENTO E LIMPEZA --- */
+
+/* Dá "ar" para os grupos de campos (Fieldsets) */
+.module fieldset {
+  padding: 20px !important;
+  margin-bottom: 30px !important;
+}
+
+/* Melhora a leitura do help_text */
+.help {
+  color: #94a3b8 !important;
+  font-size: 11px !important;
+  margin-top: 8px !important;
+  display: block !important;
+}
+
+/* Estilização da Barra Lateral (Sidebar) */
+#nav-sidebar .module th,
+#nav-sidebar .module td {
+  padding: 12px 15px !important;
+}
+
+.model-accounts a,
+.model-gamification a {
+  font-weight: 600 !important;
+  font-size: 13px !important;
+}

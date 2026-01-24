@@ -4,19 +4,21 @@ from .services import gerar_conteudo_aula
 
 # --- ADMIN ACTIONS (Inteligência Artificial) ---
 
+from django.contrib import messages # Importe isso no topo
+
 @admin.action(description="Gerar conteúdo inteligente via IA")
 def automatizar_conteudo(modeladmin, request, queryset):
-    """
-    Ação sênior: Processa os capítulos selecionados e preenche o campo 
-    'content' usando Processamento de Linguagem Natural (LLM).
-    """
     for chapter in queryset:
-        # Chamada ao serviço do Gemini passando o título da aula
+        print(f"--- Iniciando IA para: {chapter.title} ---") # LOG DE DEBUG
         conteudo_gerado = gerar_conteudo_aula(chapter.title)
-        chapter.content = conteudo_gerado
-        chapter.save()
-
-# --- CONFIGURAÇÕES INLINE ---
+        
+        print(f"Conteúdo recebido: {conteudo_gerado[:50]}...") # VERIFICA SE VEIO TEXTO
+        
+        if conteudo_gerado:
+            chapter.content = conteudo_gerado
+            chapter.save()
+        else:
+            print("AVISO: A IA retornou conteúdo vazio!")
 
 class ChapterInline(admin.TabularInline):
     model = Chapter
@@ -27,7 +29,7 @@ class ChapterInline(admin.TabularInline):
 
 @admin.register(Trail)
 class TrailAdmin(admin.ModelAdmin):
-    list_display = ('title', 'created_at', 'get_chapter_count')
+    list_display = ('title', 'created_at', 'get_chapter_count', 'image')
     search_fields = ('title',)
     inlines = [ChapterInline]
 
@@ -37,12 +39,17 @@ class TrailAdmin(admin.ModelAdmin):
 
 @admin.register(Chapter)
 class ChapterAdmin(admin.ModelAdmin):
-    list_display = ('title', 'trail', 'xp_value', 'order')
+    # Adicionamos 'video_url' aqui para você conferir o link direto na lista
+    list_display = ('title', 'trail', 'video_url', 'xp_value', 'order') 
     list_filter = ('trail',)
     search_fields = ('title', 'content')
     list_editable = ('order', 'xp_value')
-    # Integração da nova funcionalidade de IA
     actions = [automatizar_conteudo] 
+    
+    class Media:
+        css = {
+            'all': ('css/admin_custom.css',)
+        }
 
 @admin.register(Medal)
 class MedalAdmin(admin.ModelAdmin):

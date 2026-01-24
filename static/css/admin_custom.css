@@ -1,0 +1,29 @@
+/* Customização do Botão de Ação do Django Admin */
+.actions button[type="submit"] {
+  background: #00f5a0 !important; /* Nosso Verde Neon */
+  color: #0b0f1a !important; /* Azul Profundo */
+  font-weight: 900 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 1px !important;
+  padding: 8px 25px !important;
+  border-radius: 10px !important;
+  border: none !important;
+  cursor: pointer !important;
+  transition: all 0.3s ease !important;
+  box-shadow: 0 0 15px rgba(0, 245, 160, 0.3) !important;
+}
+
+.actions button[type="submit"]:hover {
+  background: #00d9ff !important; /* Muda para Ciano no hover */
+  box-shadow: 0 0 25px rgba(0, 217, 255, 0.5) !important;
+  transform: scale(1.05);
+}
+
+/* Ajuste na largura do seletor para não ficar apertado */
+.actions select {
+  background: #1e253a !important;
+  color: white !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 8px !important;
+  padding: 5px !important;
+}
