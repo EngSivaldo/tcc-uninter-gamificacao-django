@@ -25,6 +25,7 @@ urlpatterns = [
 
 
 
+
 # 2. O Território de Conteúdo (apps/gamification/urls.py)
 # O arquivo que você mostrou anteriormente cuida do que o usuário faz:
 
