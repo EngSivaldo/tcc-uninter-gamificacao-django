@@ -16,22 +16,20 @@ from .utils import check_user_medals
 # Configuração de Logs para monitorar erros de produção
 
 def index(request):
-    # 1. BUSCA GLOBAL: Buscamos as trilhas antes de qualquer check
-    # Assim elas ficam disponíveis para logados e não logados.
-    all_trails = Trail.objects.all()
+    # Buscamos as trilhas com contagem de capítulos em UMA única consulta (Performance Sênior)
+    from django.db.models import Count
+    all_trails = Trail.objects.annotate(num_chapters=Count('chapters'))
 
-    # CASO 1: VISITANTE (Não Logado)
     if not request.user.is_authenticated:
-        # AJUSTE AQUI: Agora passamos as trilhas para a Landing Page
         return render(request, 'gamification/index.html', {'all_trails': all_trails})
 
-    # CASO 2: ALUNO (Logado)
     user = request.user
     
-    # Busca o último capítulo para o "Continuar Estudando"
-    last_progress = UserProgress.objects.filter(user=user).select_related('chapter__trail').order_by('-updated_at').first()
+    # select_related evita idas extras ao banco
+    last_progress = UserProgress.objects.filter(user=user)\
+        .select_related('chapter__trail')\
+        .order_by('-updated_at').first()
     
-    # Cálculo de Progresso na Trilha Atual
     current_trail_progress = 0
     if last_progress:
         trail = last_progress.chapter.trail
@@ -39,23 +37,22 @@ def index(request):
         done_ch = UserProgress.objects.filter(user=user, chapter__trail=trail).count()
         current_trail_progress = int((done_ch / total_ch) * 100) if total_ch > 0 else 0
 
-    # Cálculo de Sincronia Global
+    # Progresso Global
     total_sys = Chapter.objects.count()
     total_done = UserProgress.objects.filter(user=user).count()
     overall_progress = int((total_done / total_sys) * 100) if total_sys > 0 else 0
 
-    # Sugestões de Trilhas
+    # Sugestões: Excluímos o que ele já começou
     started_ids = UserProgress.objects.filter(user=user).values_list('chapter__trail_id', flat=True).distinct()
-    suggested_trails = Trail.objects.exclude(id__in=started_ids)[:4]
+    suggested_trails = all_trails.exclude(id__in=started_ids)[:4]
 
     context = {
         'last_progress': last_progress,
         'current_trail_progress': current_trail_progress, 
         'overall_progress': overall_progress,           
         'suggested_trails': suggested_trails,
-        'all_trails': all_trails, # Também disponível no Hub de Estudos
+        'all_trails': all_trails,
     }
-    
     return render(request, 'gamification/home.html', context)
 
 @login_required
@@ -64,16 +61,11 @@ def trail_list(request: HttpRequest) -> HttpResponse:
     trails = Trail.objects.all()
     return render(request, 'gamification/trail_list.html', {'trails': trails})
 
-from django.shortcuts import render, get_object_or_404
-from django.http import HttpRequest, HttpResponse
-from .models import Trail, UserProgress
-
-# 1. REMOVEMOS o @login_required para permitir a "vitrine" para visitantes
 def trail_detail(request, trail_id):
     trail = get_object_or_404(Trail, id=trail_id)
+    # Ordenação explícita para evitar confusão na lista
     chapters = trail.chapters.all().order_by('id')
     
-    # Se o usuário está logado, calculamos o progresso para a barra vermelha
     progress = 0
     if request.user.is_authenticated:
         completed = UserProgress.objects.filter(user=request.user, chapter__trail=trail).count()
@@ -85,7 +77,6 @@ def trail_detail(request, trail_id):
         'chapters': chapters,
         'progress': progress,
         'total_count': chapters.count(),
-        # Aqui você pode passar um preço fixo ou vir do banco
         'price': "119,90", 
         'old_price': "497,00"
     }

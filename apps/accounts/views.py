@@ -6,7 +6,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
 from django.db.models import Sum
 from django.db.models.functions import Coalesce
-from apps.gamification.models import UserMedal, Trail, UserProgress, Medal # Garanta que Medal esteja aqui
+from apps.gamification.models import UserMedal, Trail, UserProgress # Garanta que Medal esteja aqui
 from django.utils import timezone
 
 User = get_user_model()

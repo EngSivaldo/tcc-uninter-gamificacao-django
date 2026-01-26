@@ -3,7 +3,6 @@ from django.db import models
 from django.conf import settings
 from django.utils.text import slugify
 
-# Mixin para evitar repetição (DRY)
 class TimestampedModel(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -21,11 +20,7 @@ class Medal(models.Model):
         return self.name
 
 class PointTransaction(models.Model):
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL, 
-        on_delete=models.CASCADE, 
-        related_name='transactions'
-    )
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='transactions')
     quantity = models.IntegerField(verbose_name="Quantidade de Pontos")
     description = models.CharField(max_length=255, verbose_name="Motivo do Ganho")
     created_at = models.DateTimeField(auto_now_add=True)
@@ -39,7 +34,7 @@ class Trail(TimestampedModel):
     description = models.TextField(verbose_name="Descrição")
     image = models.ImageField(upload_to='trails/', blank=True, null=True)
     total_xp = models.IntegerField(default=0)
-    is_premium = models.BooleanField(default=False, verbose_name="Trilha Premium") # Para futuras assinaturas de trilhas inteiras
+    is_premium = models.BooleanField(default=False, verbose_name="Trilha Premium")
 
     def save(self, *args, **kwargs):
         if not self.slug:
@@ -57,11 +52,13 @@ class Chapter(TimestampedModel):
     content = models.TextField(blank=True, null=True, verbose_name="Conteúdo Markdown")
     xp_value = models.PositiveIntegerField(default=50, verbose_name="Valor em XP")
     order = models.PositiveIntegerField(default=0, verbose_name="Ordem")
+    
+    # 🚨 DICA SÊNIOR: Se você quer que o visitante veja o preview, 
+    # algumas aulas precisam ser is_premium=False, ou mude a lógica do template.
     is_premium = models.BooleanField(default=True, verbose_name="Conteúdo Pago")
 
     @property
     def youtube_id(self):
-        """Extrai o ID do YouTube de forma segura."""
         if not self.video_url:
             return None
         regex = r'(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})'
@@ -69,20 +66,26 @@ class Chapter(TimestampedModel):
         return match.group(1) if match else None
 
     def save(self, *args, **kwargs):
-        if not self.pk:  
+        # Evita duplicar "Aula 01 - Aula 01" ao salvar múltiplas vezes
+        if not self.pk:
             if self.order == 0:
                 self.order = Chapter.objects.filter(trail=self.trail).count() + 1
-            if not self.title.startswith("Aula"):
-                self.title = f"Aula {self.order:02d} - {self.title}"
+            
+            clean_title = self.title.replace(f"Aula {self.order:02d} - ", "")
+            self.title = f"Aula {self.order:02d} - {clean_title}"
 
         if not self.slug:
-            base_slug = slugify(self.title)
-            slug = base_slug
+            self.slug = slugify(self.title)
+            # Lógica simples de slug único (melhorada)
+            original_slug = self.slug
+            queryset = Chapter.objects.all()
+            if self.pk:
+                queryset = queryset.exclude(pk=self.pk)
+            
             counter = 1
-            while Chapter.objects.filter(slug=slug).exists():
-                slug = f"{base_slug}-{counter}"
+            while queryset.filter(slug=self.slug).exists():
+                self.slug = f"{original_slug}-{counter}"
                 counter += 1
-            self.slug = slug
 
         super().save(*args, **kwargs)
 
@@ -95,6 +98,19 @@ class Chapter(TimestampedModel):
     def __str__(self):
         return f"{self.trail.title} - {self.title}"
 
+class UserProgress(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    chapter = models.ForeignKey(Chapter, on_delete=models.CASCADE)
+    completed_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True) 
+
+    class Meta:
+        unique_together = ('user', 'chapter')
+        ordering = ['-updated_at'] 
+        verbose_name = "Progresso do Aluno"
+        verbose_name_plural = "Progressos dos Alunos"
+        
+        
 class UserMedal(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='earned_medals')
     medal = models.ForeignKey(Medal, on_delete=models.CASCADE)
@@ -103,21 +119,10 @@ class UserMedal(models.Model):
     class Meta:
         unique_together = ('user', 'medal')
         verbose_name = "Medalha do Usuário"
+        verbose_name_plural = "Medalhas dos Usuários"
 
     def __str__(self):
         return f"{self.user.username} - {self.medal.name}"
-
-class UserProgress(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    chapter = models.ForeignKey(Chapter, on_delete=models.CASCADE)
-    completed_at = models.DateTimeField(auto_now_add=True)
     
-    # ESTA LINHA É O QUE ESTÁ FALTANDO:
-    updated_at = models.DateTimeField(auto_now=True) 
-
-    class Meta:
-        unique_together = ('user', 'chapter')
-        # Agora o Django vai encontrar o campo aqui embaixo:
-        ordering = ['-updated_at'] 
-        verbose_name = "Progresso do Aluno"
-        verbose_name_plural = "Progressos dos Alunos"
+    
+    
