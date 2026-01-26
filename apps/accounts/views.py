@@ -41,7 +41,8 @@ def register(request):
         form = StudentRegistrationForm()
     return render(request, 'accounts/register.html', {'form': form})
 
-# --- 4. VIEW DO DASHBOARD (STATUS DO ALUNO) ---
+
+
 @login_required
 def dashboard(request):
     user = request.user
@@ -49,10 +50,9 @@ def dashboard(request):
     # 1. Busca capítulos concluídos
     completed_chapters = UserProgress.objects.filter(user=user).select_related('chapter__trail')
     
-    # 2. Leaderboard Global
-    ranking = User.objects.annotate(
-        total_xp_calc=Coalesce(Sum('transactions__quantity'), 0)
-    ).order_by('-total_xp_calc')[:5]
+    # 2. Leaderboard Global (AJUSTADO PARA USAR O CAMPO XP DIRETO)
+    # Ordenamos pelo campo 'xp' do seu modelo User
+    ranking = User.objects.all().order_by('-xp')[:5] 
     
     # 3. Estatísticas de Trilhas
     trails = Trail.objects.all()
@@ -74,7 +74,7 @@ def dashboard(request):
 
     context = {
         'user': user,
-        'ranking': ranking,
+        'ranking': ranking, # Agora com XP real do campo .xp
         'conquistas': conquistas,
         'total_points': user.xp,
         'progress': sincronia_global,

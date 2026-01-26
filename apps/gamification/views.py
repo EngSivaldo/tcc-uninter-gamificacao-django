@@ -7,25 +7,44 @@ from django.http import HttpRequest, HttpResponse
 import markdown
 import logging
 from django.utils import timezone
+from django.db.models import Count
 
 
 # Importações dos modelos do seu domínio
 from .models import Trail, Chapter, PointTransaction, UserProgress
 from .utils import check_user_medals
 
+import logging # Adicione isso
+from django.utils.safestring import mark_safe
+
+# Defina o logger aqui
+logger = logging.getLogger(__name__)
+
 # Configuração de Logs para monitorar erros de produção
 
+
+# ✅ RESOLVE O ERRO: Define o logger para evitar falhas silenciosas
+logger = logging.getLogger(__name__)
+
 def index(request):
-    # Buscamos as trilhas com contagem de capítulos em UMA única consulta (Performance Sênior)
     from django.db.models import Count
     all_trails = Trail.objects.annotate(num_chapters=Count('chapters'))
 
+    # --- PORTA DE ENTRADA 1: VISITANTE ---
     if not request.user.is_authenticated:
         return render(request, 'gamification/index.html', {'all_trails': all_trails})
 
+    # --- PORTA DE ENTRADA 2: ALUNO LOGADO ---
     user = request.user
     
-    # select_related evita idas extras ao banco
+    # 1. Filtramos o que ele já começou (Seus Cursos)
+    started_ids = UserProgress.objects.filter(user=user).values_list('chapter__trail_id', flat=True).distinct()
+    my_trails = all_trails.filter(id__in=started_ids)
+    
+    # 2. Filtramos o que ele NÃO começou (Sugestões em Cards)
+    suggested_trails = all_trails.exclude(id__in=started_ids)[:4]
+
+    # 3. Lógica de Progresso (Sua lógica original preservada)
     last_progress = UserProgress.objects.filter(user=user)\
         .select_related('chapter__trail')\
         .order_by('-updated_at').first()
@@ -37,21 +56,20 @@ def index(request):
         done_ch = UserProgress.objects.filter(user=user, chapter__trail=trail).count()
         current_trail_progress = int((done_ch / total_ch) * 100) if total_ch > 0 else 0
 
-    # Progresso Global
     total_sys = Chapter.objects.count()
     total_done = UserProgress.objects.filter(user=user).count()
     overall_progress = int((total_done / total_sys) * 100) if total_sys > 0 else 0
 
-    # Sugestões: Excluímos o que ele já começou
-    started_ids = UserProgress.objects.filter(user=user).values_list('chapter__trail_id', flat=True).distinct()
-    suggested_trails = all_trails.exclude(id__in=started_ids)[:4]
+    # 4. Lista para o Arsenal (Evita o erro 'Invalid filter: split')
+    tech_list = ["python", "docker", "js", "database", "git-alt", "cloud"]
 
     context = {
+        'my_trails': my_trails,           # O que ele já usa
+        'suggested_trails': suggested_trails, # Sugestões (cards com imagem)
+        'tech_list': tech_list,           # Lista para o slider
         'last_progress': last_progress,
         'current_trail_progress': current_trail_progress, 
-        'overall_progress': overall_progress,           
-        'suggested_trails': suggested_trails,
-        'all_trails': all_trails,
+        'overall_progress': overall_progress,
     }
     return render(request, 'gamification/home.html', context)
 
@@ -170,3 +188,14 @@ def error_404(request, exception):
 
 def error_500(request):
     return render(request, '500.html', status=500)
+
+
+# apps/gamification/views.py
+def tech_detail(request, tech_slug):
+    """View para filtrar trilhas por tecnologia"""
+    from .models import Trail
+    trails = Trail.objects.filter(title__icontains=tech_slug)
+    return render(request, 'gamification/tech_detail.html', {
+        'tech_name': tech_slug.upper(),
+        'trails': trails
+    })

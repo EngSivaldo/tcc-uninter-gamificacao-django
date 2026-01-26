@@ -18,6 +18,7 @@ urlpatterns = [
     
     # Rota de Conversão e Vendas (Pilar da Monetização)
     path('checkout/', views.checkout, name='checkout'),
+    path('tecnologia/<str:tech_slug>/', views.tech_detail, name='tech_detail'),
 ]
 
 

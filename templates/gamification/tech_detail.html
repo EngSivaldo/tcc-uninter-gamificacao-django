@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="space-y-16 pb-24 animate-fadeIn">
+    <section class="max-w-7xl mx-auto px-6 pt-10">
+        <div class="bg-dark-800/60 border border-white/10 rounded-[3.5rem] p-12 relative overflow-hidden">
+            <div class="absolute -right-20 -top-20 w-64 h-64 bg-neon/10 blur-[100px] rounded-full"></div>
+            <div class="relative z-10 space-y-4">
+                <p class="text-neon font-black uppercase text-xs tracking-[0.4em] italic">Especialização Técnica</p>
+                <h1 class="text-6xl font-black text-white italic uppercase tracking-tighter">Domínio: {{ tech_name }}</h1>
+                <p class="text-slate-400 max-w-2xl font-medium leading-relaxed">
+                    Explore todas as trilhas e projetos práticos focados em <span class="text-white">{{ tech_name }}</span>. 
+                    Prepare-se para o mercado com o selo de qualidade Polo UNINTER.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section class="max-w-7xl mx-auto px-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+            {% for trail in trails %}
+            <div class="group bg-dark-800/40 border border-white/5 rounded-[2.5rem] overflow-hidden hover:border-neon/40 transition-all flex flex-col shadow-2xl">
+                <div class="relative aspect-video">
+                    {% if trail.image %}
+                        <img src="{{ trail.image.url }}" class="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-all">
+                    {% endif %}
+                </div>
+                <div class="p-8">
+                    <h3 class="text-xl font-black text-white uppercase italic group-hover:text-neon transition-colors">{{ trail.title }}</h3>
+                    <div class="mt-6 flex justify-between items-center">
+                        <span class="text-[10px] font-black text-slate-500 uppercase italic">{{ trail.chapters.count }} Módulos</span>
+                        <a href="{% url 'gamification:trail_detail' trail.id %}" class="bg-white text-dark-950 px-6 py-2 rounded-xl font-black text-[10px] uppercase italic hover:bg-neon transition-all">Ver Agora</a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-span-full text-center py-20 bg-dark-800/20 rounded-[3rem] border border-dashed border-white/10">
+                <i class="fas fa-search text-slate-700 text-5xl mb-6"></i>
+                <p class="text-slate-500 font-bold uppercase italic tracking-widest">Nenhuma trilha encontrada para este Arsenal.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+</div>
+{% endblock %}

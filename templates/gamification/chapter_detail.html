@@ -101,6 +101,27 @@
         </footer>
     </div>
 </div>
+<script>
+    let player;
+    function onYouTubeIframeAPIReady() {
+        if ("{{ chapter.youtube_id }}" === "") return;
+        player = new YT.Player('yt-player', {
+            height: '100%', width: '100%', videoId: '{{ chapter.youtube_id }}',
+            playerVars: { 'rel': 0, 'modestbranding': 1, 'autoplay': 0 },
+            events: { 
+                'onStateChange': (event) => {
+                    if (event.data == YT.PlayerState.PLAYING && !{{ user.is_plus|yesno:"true,false" }}) {
+                        setTimeout(() => {
+                            const alpine = document.querySelector('[x-data]').__x.$data;
+                            alpine.isLocked = true; 
+                            player.stopVideo(); 
+                        }, 30000); 
+                    }
+                }
+            }
+        }); // ✅ FECHAMENTO CORRETO DO PLAYER
+    } // ✅ FECHAMENTO CORRETO DA FUNÇÃO
+</script>
 
 <style>
     /* Animação Suave */
