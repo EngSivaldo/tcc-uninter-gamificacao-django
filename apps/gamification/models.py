@@ -148,3 +148,26 @@ class UserMedal(models.Model):
     
     
     
+class Questao(TimestampedModel):
+    chapter = models.ForeignKey(Chapter, on_delete=models.CASCADE, related_name='questoes')
+    enunciado = models.TextField(verbose_name="Pergunta")
+    xp_recompensa = models.PositiveIntegerField(default=10, verbose_name="XP por Acerto")
+
+    class Meta:
+        verbose_name = "Questão"
+        verbose_name_plural = "Questões"
+
+    def __str__(self):
+        return f"Pergunta: {self.enunciado[:50]}..."
+
+class Alternativa(models.Model):
+    questao = models.ForeignKey(Questao, on_delete=models.CASCADE, related_name='alternativas')
+    texto = models.CharField(max_length=255, verbose_name="Texto da Alternativa")
+    e_correta = models.BooleanField(default=False, verbose_name="É a resposta correta?")
+
+    class Meta:
+        verbose_name = "Alternativa"
+        verbose_name_plural = "Alternativas"
+
+    def __str__(self):
+        return self.texto

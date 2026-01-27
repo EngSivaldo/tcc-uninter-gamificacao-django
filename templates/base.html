@@ -157,6 +157,16 @@
     </nav>
 
     <main class="flex-grow container mx-auto px-4 py-10 relative z-10">
+        {% if messages %}
+        <div class="fixed top-5 right-5 z-50 space-y-4 animate-bounce">
+            {% for message in messages %}
+            <div class="flex items-center gap-3 bg-dark-900 border-l-4 {% if message.tags == 'success' %}border-neon text-neon{% else %}border-amber-500 text-amber-500{% endif %} p-5 shadow-2xl rounded-r-xl backdrop-blur-md">
+                <i class="fas {% if message.tags == 'success' %}fa-trophy{% else %}fa-info-circle{% endif %}"></i>
+                <p class="font-black text-xs uppercase tracking-widest">{{ message }}</p>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
         {% block content %}
         {% endblock %}
     </main>

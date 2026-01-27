@@ -11,7 +11,7 @@ from django.db.models import Count
 
 
 # Importações dos modelos do seu domínio
-from .models import Trail, Chapter, PointTransaction, UserProgress
+from .models import Trail, Chapter, PointTransaction, UserProgress, Alternativa, Questao
 from .utils import check_user_medals
 
 
@@ -245,3 +245,76 @@ def tech_detail(request, tech_slug):
         'tech_name': tech_slug.upper(),
         'trails': trails
     })
+    
+    
+
+
+def exibir_quiz(request, slug):
+    capitulo = get_object_or_404(Chapter, slug=slug)
+    questoes = capitulo.questoes.all().prefetch_related('alternativas')
+    
+    # VERIFICAÇÃO DE COMPETIÇÃO: O usuário já ganhou pontos aqui?
+    ja_ganhou_pontos = PointTransaction.objects.filter(
+        user=request.user, 
+        description__icontains=capitulo.title
+    ).exists()
+    
+    if request.method == "POST":
+        pontos_ganhos = 0
+        acertos = 0
+        total = questoes.count()
+        detalhes_resultado = []
+
+        for questao in questoes:
+            alternativa_id = request.POST.get(f'questao_{questao.id}')
+            escolha_usuario = None
+            correta = questao.alternativas.filter(e_correta=True).first()
+            
+            if alternativa_id:
+                try:
+                    escolha_usuario = Alternativa.objects.get(id=alternativa_id)
+                    if escolha_usuario.e_correta:
+                        acertos += 1
+                        pontos_ganhos += questao.xp_recompensa
+                except Alternativa.DoesNotExist:
+                    continue
+
+            detalhes_resultado.append({
+                'pergunta': questao.enunciado,
+                'escolha': escolha_usuario.texto if escolha_usuario else "Não respondida",
+                'correta': correta.texto if correta else "",
+                'foi_correta': escolha_usuario.e_correta if escolha_usuario else False
+            })
+
+        # SÓ SALVA SE NÃO TIVER GANHO ANTES
+        pode_receber_pontos = False
+        if pontos_ganhos > 0 and not ja_ganhou_pontos:
+            PointTransaction.objects.create(
+                user=request.user,
+                quantity=pontos_ganhos,
+                description=f"Quiz: {capitulo.title}"
+            )
+            pode_receber_pontos = True
+
+        return render(request, 'gamification/quiz_resultado.html', {
+            'capitulo': capitulo,
+            'acertos': acertos,
+            'total': total,
+            'pontos': pontos_ganhos,
+            'resultados': detalhes_resultado,
+            'ja_ganhou_pontos': ja_ganhou_pontos, # Passamos isso para o template
+            'pode_receber_pontos': pode_receber_pontos
+        })
+
+    return render(request, 'gamification/quiz.html', {
+        'capitulo': capitulo, 
+        'questoes': questoes,
+        'ja_ganhou_pontos': ja_ganhou_pontos # Avisamos no quiz também
+    })
+
+def responder_questao(request, questao_id):
+    """ Processa a resposta enviada pelo aluno """
+    if request.method == "POST":
+        # A lógica de validação entraremos em detalhe no próximo passo
+        return redirect('gamification:exibir_quiz', slug="slug-do-capitulo")
+    return redirect('gamification:trail_list') # Redirecionamento temporário

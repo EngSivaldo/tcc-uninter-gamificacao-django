@@ -43,6 +43,14 @@ def register(request):
 
 
 
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+# Certifique-se de que os caminhos dos modelos estão corretos de acordo com seu projeto
+from apps.gamification.models import UserProgress, Trail, UserMedal, PointTransaction
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
+
 @login_required
 def dashboard(request):
     user = request.user
@@ -50,8 +58,7 @@ def dashboard(request):
     # 1. Busca capítulos concluídos
     completed_chapters = UserProgress.objects.filter(user=user).select_related('chapter__trail')
     
-    # 2. Leaderboard Global (AJUSTADO PARA USAR O CAMPO XP DIRETO)
-    # Ordenamos pelo campo 'xp' do seu modelo User
+    # 2. Leaderboard Global 
     ranking = User.objects.all().order_by('-xp')[:5] 
     
     # 3. Estatísticas de Trilhas
@@ -65,19 +72,25 @@ def dashboard(request):
         if total_chapters_in_trail > 0 and done_in_trail == total_chapters_in_trail:
             completed_trails_count += 1
     
-    # 4. Cálculo de Sincronia Global
+    # 4. Cálculo de Sincronia Global (Progresso)
     total_chapters_system = sum([t.chapters.count() for t in trails])
-    sincronia_global = (completed_chapters.count() / total_chapters_system * 100) if total_chapters_system > 0 else 0
+    overall_progress = int((completed_chapters.count() / total_chapters_system * 100)) if total_chapters_system > 0 else 0
 
-    # 5. Conquistas (Medalhas)
-    conquistas = UserMedal.objects.filter(user=user).select_related('medal').order_by('-earned_at')
+    # 5. Log de Operações Recentes (Últimos 3 Quizzes/Ganhos de XP)
+    transacoes_recentes = PointTransaction.objects.filter(
+        user=user
+    ).order_by('-created_at')[:3]
+
+    # 6. BUSCA AS MEDALHAS (O que estava faltando!)
+    # Usamos select_related('medal') para buscar o nome e ícone da medalha de uma vez só
+    conquistas = UserMedal.objects.filter(user=user).select_related('medal')
 
     context = {
         'user': user,
-        'ranking': ranking, # Agora com XP real do campo .xp
-        'conquistas': conquistas,
-        'total_points': user.xp,
-        'progress': sincronia_global,
+        'ranking': ranking,
+        'overall_progress': overall_progress,
+        'transacoes_recentes': transacoes_recentes,
+        'conquistas': conquistas, # Agora as medalhas chegam no HTML
         'total_trails': total_trails_count,
         'completed_trails': completed_trails_count,
     }

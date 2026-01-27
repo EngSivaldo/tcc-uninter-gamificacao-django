@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto px-4 py-12 animate-fadeIn">
+    
+    <div class="bg-dark-800 border border-white/10 rounded-[3rem] p-10 text-center space-y-8 shadow-2xl relative overflow-hidden">
+        <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-neon to-accent"></div>
+        
+        <div class="space-y-2">
+            <h1 class="text-4xl font-black text-white uppercase italic tracking-tighter">
+                {% if acertos == total %}Missão <span class="text-neon">Perfeita!</span>{% else %}Análise de <span class="text-accent">Desempenho</span>{% endif %}
+            </h1>
+            <p class="text-slate-400 font-medium">Aula: {{ capitulo.title }}</p>
+        </div>
+
+        <div class="flex justify-center">
+            <div class="relative flex items-center justify-center w-48 h-48 rounded-full border-8 border-dark-700 shadow-inner bg-dark-900/50">
+                <div class="text-center">
+                    <span class="block text-6xl font-black text-white">{{ acertos }}</span>
+                    <span class="text-slate-500 font-bold uppercase text-[10px] tracking-widest">de {{ total }} acertos</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white/5 rounded-3xl p-8 border border-white/5 backdrop-blur-sm">
+            {% if pode_receber_pontos %}
+                <p class="text-neon text-xs uppercase tracking-[0.3em] font-black mb-2 animate-pulse">Novos pontos conquistados!</p>
+                <div class="flex items-center justify-center gap-4 text-accent">
+                    <i class="fas fa-bolt text-3xl"></i>
+                    <span class="text-5xl font-black tracking-tighter">+{{ pontos }} XP</span>
+                </div>
+            {% elif ja_ganhou_pontos %}
+                <p class="text-amber-400 text-xs uppercase tracking-[0.3em] font-black mb-2">Pontos já coletados anteriormente</p>
+                <div class="flex items-center justify-center gap-4 text-slate-500">
+                    <i class="fas fa-history text-2xl"></i>
+                    <span class="text-4xl font-black tracking-tighter">{{ pontos }} XP</span>
+                </div>
+                <p class="text-slate-500 text-[10px] mt-3 italic">Você pode refazer o quiz para estudar, mas o XP é creditado apenas na primeira vitória.</p>
+            {% else %}
+                <p class="text-red-500 text-xs uppercase tracking-[0.3em] font-black mb-2">Sem novos pontos</p>
+                <span class="text-4xl font-black text-slate-600">0 XP</span>
+            {% endif %}
+        </div>
+
+        <div class="text-left space-y-4">
+            <h3 class="text-white font-black text-sm uppercase tracking-widest ml-2 opacity-50 italic">Gabarito Técnico</h3>
+            
+            {% for res in resultados %}
+            <div class="p-6 rounded-[2rem] border transition-all {% if res.foi_correta %}bg-green-500/5 border-green-500/20{% else %}bg-red-500/5 border-red-500/20{% endif %}">
+                <div class="flex gap-4">
+                    <div class="mt-1">
+                        {% if res.foi_correta %}
+                            <i class="fas fa-check-circle text-green-500 text-xl"></i>
+                        {% else %}
+                            <i class="fas fa-times-circle text-red-500 text-xl"></i>
+                        {% endif %}
+                    </div>
+                    <div>
+                        <p class="text-white font-bold mb-3 leading-tight text-sm md:text-base">{{ res.pergunta }}</p>
+                        <div class="space-y-1">
+                            <p class="text-[10px] uppercase tracking-wider font-black {% if res.foi_correta %}text-green-400{% else %}text-red-400{% endif %}">
+                                Sua resposta: {{ res.escolha }}
+                            </p>
+                            {% if not res.foi_correta %}
+                            <p class="text-[10px] uppercase tracking-wider text-slate-500 font-bold">
+                                Correta: <span class="text-slate-300">{{ res.correta }}</span>
+                            </p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="pt-6">
+            <a href="{% url 'gamification:trail_detail' capitulo.trail.id %}" 
+               class="group block w-full bg-white hover:bg-neon text-dark-900 font-black py-6 rounded-3xl transition-all hover:scale-[1.02] active:scale-95 text-xl uppercase italic tracking-tighter shadow-xl">
+                Retornar à Trilha 🚀
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+    .animate-fadeIn {
+        animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(30px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+{% endblock %}
