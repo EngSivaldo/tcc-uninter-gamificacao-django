@@ -53,7 +53,7 @@ class Chapter(TimestampedModel):
     xp_value = models.PositiveIntegerField(default=50, verbose_name="Valor em XP")
     order = models.PositiveIntegerField(default=0, verbose_name="Ordem")
     
-    # 🚨 DICA SÊNIOR: Se você quer que o visitante veja o preview, 
+    # Se você quer que o visitante veja o preview, 
     # algumas aulas precisam ser is_premium=False, ou mude a lógica do template.
     is_premium = models.BooleanField(default=True, verbose_name="Conteúdo Pago")
 
@@ -97,6 +97,28 @@ class Chapter(TimestampedModel):
 
     def __str__(self):
         return f"{self.trail.title} - {self.title}"
+    
+    # Dentro da classe Chapter
+    def is_unlocked(self, user):
+        """
+        Verifica se este capítulo está desbloqueado para um utilizador específico.
+        """
+        # Se for a primeira aula (order=1), está sempre desbloqueada
+        if self.order <= 1:
+            return True
+        
+        # Busca o capítulo anterior na mesma trilha
+        previous_chapter = Chapter.objects.filter(
+            trail=self.trail, 
+            order__lt=self.order
+        ).order_by('-order').first()
+
+        if not previous_chapter:
+            return True # Fallback caso não encontre o anterior
+
+        # Verifica se existe progresso registado para o capítulo anterior
+        from .models import UserProgress # Import local para evitar importação circular
+        return UserProgress.objects.filter(user=user, chapter=previous_chapter).exists()
 
 class UserProgress(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)

@@ -14,8 +14,7 @@ from django.db.models import Count
 from .models import Trail, Chapter, PointTransaction, UserProgress
 from .utils import check_user_medals
 
-import logging # Adicione isso
-from django.utils.safestring import mark_safe
+
 
 # Defina o logger aqui
 logger = logging.getLogger(__name__)
@@ -81,14 +80,32 @@ def trail_list(request: HttpRequest) -> HttpResponse:
 
 def trail_detail(request, trail_id):
     trail = get_object_or_404(Trail, id=trail_id)
-    # Ordenação explícita para evitar confusão na lista
-    chapters = trail.chapters.all().order_by('id')
+    
+    # ✅ IMPORTANTE: Usamos 'order' em vez de 'id' para respeitar a sequência didática
+    chapters = trail.chapters.all().order_by('order')
     
     progress = 0
+    completed_ids = []
+
     if request.user.is_authenticated:
-        completed = UserProgress.objects.filter(user=request.user, chapter__trail=trail).count()
-        if chapters.count() > 0:
-            progress = (completed / chapters.count()) * 100
+        # Buscamos apenas os IDs das aulas concluídas para otimizar a performance
+        completed_ids = UserProgress.objects.filter(
+            user=request.user, 
+            chapter__trail=trail
+        ).values_list('chapter_id', flat=True)
+
+        total_chapters = chapters.count()
+        if total_chapters > 0:
+            # Cálculo do progresso usando LaTeX para documentação:
+            # $$Progress = \frac{Completed}{Total} \times 100$$
+            progress = (len(completed_ids) / total_chapters) * 100
+
+    # ✅ MAPEAMENTO DE ESTADO: 
+    # Injetamos as flags 'is_completed' e 'is_unlocked' em cada objeto antes de enviar ao template
+    for chapter in chapters:
+        chapter.is_completed = chapter.id in completed_ids
+        # Chamamos o método que criamos no Model para checar a trava
+        chapter.unlocked = chapter.is_unlocked(request.user)
 
     context = {
         'trail': trail,
@@ -103,18 +120,29 @@ def trail_detail(request, trail_id):
 @login_required
 def chapter_detail(request: HttpRequest, chapter_id: int) -> HttpResponse:
     """
-    Exibe o conteúdo da aula com Trava de Segurança Premium e renderização Markdown.
-    A trava de segurança garante que conteúdos Premium não sejam acessados sem 'is_plus'.
+    Exibe a aula unindo:
+    1. Bloqueio de Sequência (Didática)
+    2. Trava Premium (Monetização)
+    3. Renderização Markdown (Conteúdo)
     """
     chapter = get_object_or_404(Chapter, id=chapter_id)
+    user = request.user
     
-    # --- CAMADA DE SEGURANÇA BACKEND ---
-    if chapter.is_premium and not request.user.is_plus:
-        messages.info(request, "🛡️ Conteúdo Exclusivo: Esta aula está disponível apenas no Plano Plus.")
+    # --- 1. CAMADA DE SEGURANÇA: SEQUÊNCIA (DIDÁTICA) ---
+    # Verifica se a aula anterior foi concluída (método que criamos no Model)
+    if not chapter.is_unlocked(user):
+        messages.error(request, "🛡️ Acesso Negado: Você precisa concluir a unidade anterior para liberar esta aula.")
+        return redirect('gamification:trail_detail', trail_id=chapter.trail.id)
+
+    # --- 2. CAMADA DE SEGURANÇA: PREMIUM (MONETIZAÇÃO) ---
+    if chapter.is_premium and not user.is_plus:
+        messages.info(request, "💎 Conteúdo Exclusivo: Esta aula está disponível apenas no Plano Plus.")
         return redirect('gamification:checkout') 
     
+    # --- 3. PROCESSAMENTO DE CONTEÚDO TÉCNICO ---
     raw_content = chapter.content or ""
     try:
+        # Renderiza o Markdown com suporte a código e tabelas
         html_output = markdown.markdown(
             raw_content, 
             extensions=['fenced_code', 'codehilite', 'tables', 'toc']
@@ -122,49 +150,67 @@ def chapter_detail(request: HttpRequest, chapter_id: int) -> HttpResponse:
         chapter.content_html = mark_safe(html_output)
     except Exception as e:
         logger.error(f"Erro na renderização do Markdown para o capítulo {chapter_id}: {e}")
-        chapter.content_html = mark_safe("<p class='text-red-500'>Erro ao carregar conteúdo técnico.</p>")
+        chapter.content_html = mark_safe("<p class='text-red-500 italic'>O subsistema de renderização falhou ao carregar o conteúdo técnico.</p>")
 
     return render(request, 'gamification/chapter_detail.html', {'chapter': chapter})
 
 @login_required
 def complete_chapter(request: HttpRequest, chapter_id: int) -> HttpResponse:
     """
-    Conclui a aula, registra progresso e concede XP usando transação atômica.
+    Conclui a aula, registra progresso, concede XP e navega para a próxima aula.
+    Mantém o histórico em PointTransaction e checa medalhas.
     """
-    
     chapter = get_object_or_404(Chapter, id=chapter_id)
     user = request.user
 
-    already_done = PointTransaction.objects.filter(
-        user=user,
-        description=f"Conclusão: {chapter.title}"
-    ).exists()
+    # ✅ 1. Verificação de Integridade (Usando UserProgress que é mais direto)
+    already_done = UserProgress.objects.filter(user=user, chapter=chapter).exists()
 
     if already_done:
-        messages.warning(request, "Você já concluiu esta etapa e recebeu seu XP.")
-        return redirect('gamification:trail_detail', trail_id=chapter.trail.id)
+        messages.warning(request, "Você já concluiu esta etapa.")
+        # Se já concluiu, vamos tentar mandar ele para a próxima aula mesmo assim
+    else:
+        try:
+            with transaction.atomic():
+                # Registra o progresso físico
+                UserProgress.objects.get_or_create(user=user, chapter=chapter)
+                
+                # Registra a transação de pontos (Auditoria)
+                PointTransaction.objects.create(
+                    user=user,
+                    quantity=chapter.xp_value,
+                    description=f"Conclusão: {chapter.title}"
+                )
+                
+                # Atualiza o saldo do usuário
+                user.xp += chapter.xp_value
+                user.save(update_fields=["xp"])
+                
+                # Checa se o novo XP liberou medalhas
+                novas_conquistas = check_user_medals(user)
 
-    try:
-        with transaction.atomic():
-            UserProgress.objects.get_or_create(user=user, chapter=chapter)
-            PointTransaction.objects.create(
-                user=user,
-                quantity=chapter.xp_value,
-                description=f"Conclusão: {chapter.title}"
-            )
-            user.xp += chapter.xp_value
-            user.save(update_fields=["xp"])
-            novas_conquistas = check_user_medals(user)
+            if novas_conquistas:
+                messages.success(request, f"🏆 Impressionante! +{chapter.xp_value} XP e novas medalhas: {', '.join(novas_conquistas)}!")
+            else:
+                messages.success(request, f"✅ Unidade finalizada! +{chapter.xp_value} XP adicionado.")
 
-        if novas_conquistas:
-            messages.success(request, f"🏆 Impressionante! +{chapter.xp_value} XP e novas medalhas: {', '.join(novas_conquistas)}!")
-        else:
-            messages.success(request, f"✅ Aula finalizada! +{chapter.xp_value} XP adicionado.")
+        except Exception as e:
+            logger.error(f"Erro crítico na gamificação (User {user.id}): {e}")
+            messages.error(request, "Erro ao processar recompensa.")
+            return redirect('gamification:trail_detail', trail_id=chapter.trail.id)
 
-    except Exception as e:
-        logger.error(f"Erro crítico na gamificação (User {user.id}): {e}")
-        messages.error(request, "Erro ao processar recompensa.")
+    # ✅ 2. LÓGICA DE NAVEGAÇÃO INTELIGENTE (O "Pulo do Gato")
+    # Buscamos o próximo capítulo da mesma trilha baseado na ordem
+    next_chapter = Chapter.objects.filter(
+        trail=chapter.trail, 
+        order__gt=chapter.order  # 'order' deve ser um campo no seu model Chapter
+    ).order_by('order').first()
 
+    if next_chapter:
+        # Se existir próxima aula, vai direto para ela (UX de Elite)
+        return redirect('gamification:chapter_detail', chapter_id=next_chapter.id)
+    
+    # Se for a última aula, volta para a página da trilha para ele ver o 100%
     return redirect('gamification:trail_detail', trail_id=chapter.trail.id)
 
 @login_required

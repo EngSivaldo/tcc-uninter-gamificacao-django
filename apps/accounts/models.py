@@ -34,15 +34,22 @@ class User(AbstractUser):
     @property
     def is_premium_member(self):
         """Retorna True se o usuário for assinante ou administrador."""
-        # Corrigido: self.is_is_staff removido por self.is_staff
         return self.is_plus or self.is_staff
 
-    def get_rank(self):
-        """Lógica de Patente baseada em XP para o Dashboard."""
-        if self.xp >= 1000: return "Staff Engineer"
-        if self.xp >= 500: return "Senior Developer"
-        if self.xp >= 200: return "Lead Developer"
-        return "Junior Developer"
+    @property
+    def rank(self):
+        """
+        Lógica de Patente 'Elite' baseada em XP.
+        Retorna um dicionário com Nome, Cor (Tailwind) e Ícone (FontAwesome).
+        """
+        if self.xp >= 5000:
+            return {'name': 'Staff Engineer', 'color': 'violet-500', 'icon': 'fa-trophy'}
+        if self.xp >= 1500:
+            return {'name': 'Senior Developer', 'color': 'accent', 'icon': 'fa-microchip'}
+        if self.xp >= 500:
+            return {'name': 'Lead Developer', 'color': 'neon', 'icon': 'fa-code'}
+        
+        return {'name': 'Junior Developer', 'color': 'slate-400', 'icon': 'fa-seedling'}
 
     def __str__(self):
         return f"{self.username} (RU: {self.ru})"
