@@ -97,6 +97,18 @@
                     FAZER EXERCÍCIO DE IA
                 </span>
             </a>
+            <div class="bg-accent/5 border border-accent/20 rounded-2xl p-4 mb-6 flex items-start gap-4">
+                <div class="bg-accent/10 p-2 rounded-lg text-accent">
+                    <i class="fas fa-info-circle text-lg"></i>
+                </div>
+                <div>
+                    <p class="text-[10px] font-black text-accent uppercase tracking-widest mb-1 italic">Protocolo de Recompensa</p>
+                    <p class="text-xs text-slate-400 leading-tight">
+                        Esta unidade vale <span class="text-white font-bold">{{ chapter.xp_value }} XP</span>. 
+                        Ganhe <span class="text-accent font-bold">50% na leitura</span> e os outros <span class="text-neon font-bold">50% ao ser aprovado no Quiz</span>.
+                    </p>
+                </div>
+            </div>
             
             <a href="{% url 'gamification:complete_chapter' chapter.id %}" 
                 class="group relative inline-flex items-center justify-center px-16 py-6 font-black text-dark-900 bg-white hover:bg-neon rounded-3xl transition-all hover:scale-[1.03] hover:shadow-[0_20px_60px_-15px_rgba(0,245,160,0.4)] active:scale-95 text-xl uppercase italic tracking-tighter w-full md:w-auto overflow-hidden">
