@@ -4,15 +4,22 @@ from .models import User
 
 @admin.register(User)
 class CustomUserAdmin(UserAdmin):
-    # Define quais campos aparecem na lista de usuários
-    list_display = ('username', 'email', 'ru', 'xp', 'is_staff')
+    # 1. Campos que aparecem na lista de usuários
+    list_display = ('username', 'ru', 'xp', 'is_plus', 'is_staff')
+    list_filter = ('is_plus', 'is_staff', 'is_superuser')
     
-    # Adiciona os novos campos nos formulários de edição
+    # 2. Campos que aparecem ao EDITAR um usuário existente
+    # Trocamos 'points' por 'xp' aqui
     fieldsets = UserAdmin.fieldsets + (
-        ("Informações Acadêmicas e Gamificação", {'fields': ('ru', 'points')}),
+        ('Informações Acadêmicas', {'fields': ('ru',)}),
+        ('Gamificação', {'fields': ('xp', 'is_plus')}),
     )
     
-    # Adiciona os novos campos no formulário de criação
+    # 3. Campos que aparecem ao ADICIONAR um novo usuário (Onde dava o erro)
+    # Trocamos 'points' por 'xp' aqui também
     add_fieldsets = UserAdmin.add_fieldsets + (
-        ("Informações Acadêmicas", {'fields': ('ru', 'points')}),
+        ('Informações Acadêmicas', {'fields': ('ru', 'xp', 'is_plus')}),
     )
+
+    # Ordenação padrão no admin
+    ordering = ('-date_joined',)

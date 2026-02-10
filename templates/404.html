@@ -1,38 +1,58 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="min-h-[75vh] flex flex-col items-center justify-center text-center px-6 animate-fadeIn">
+<div class="min-h-[80vh] flex flex-col items-center justify-center text-center px-6 relative overflow-hidden animate-fadeIn">
     
-    <div class="relative mb-10">
-        <div class="absolute inset-0 bg-blue-400 blur-[80px] opacity-20 rounded-full animate-pulse"></div>
-        <i class="fas fa-compass text-[120px] text-slate-300 relative animate-[spin_10s_linear_infinite]"></i>
-        <div class="absolute -top-4 -right-4 bg-red-600 text-white w-14 h-14 rounded-2xl flex items-center justify-center font-black border-4 border-white shadow-2xl rotate-12">
-            404
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-accent/10 blur-[120px] rounded-full pointer-events-none"></div>
+
+    <div class="relative mb-12">
+        <div class="relative z-10">
+            <i class="fas fa-microchip text-[140px] text-white/5 drop-shadow-[0_0_30px_rgba(0,245,160,0.1)]"></i>
+            <div class="absolute inset-0 flex items-center justify-center">
+                <span class="text-8xl font-black text-neon tracking-tighter italic animate-pulse">404</span>
+            </div>
         </div>
+        
+        <div class="absolute -bottom-4 left-1/2 -translate-x-1/2 w-48 h-[2px] bg-gradient-to-r from-transparent via-neon to-transparent"></div>
     </div>
 
-    <h1 class="text-4xl md:text-5xl font-black text-slate-800 mb-4 tracking-tighter">NÍVEL NÃO ENCONTRADO</h1>
-    <p class="text-slate-500 max-w-md mx-auto mb-12 leading-relaxed font-medium text-lg">
-        Parece que você se desviou da trilha principal. Esta área ainda não foi mapeada em nosso sistema de conhecimento.
-    </p>
+    <div class="space-y-6 relative z-10">
+        <h1 class="text-4xl md:text-6xl font-black text-white tracking-tighter uppercase italic">
+            Desvio de <span class="text-transparent bg-clip-text bg-gradient-to-r from-neon to-accent">Rota Detectado.</span>
+        </h1>
+        
+        <p class="text-slate-400 max-w-lg mx-auto leading-relaxed font-medium text-lg italic">
+            O subsistema de navegação falhou ao localizar o endereço solicitado. <br>
+            <span class="text-slate-600 text-sm font-mono uppercase mt-4 block">Status: [Object_Not_Found]</span>
+        </p>
+    </div>
 
-    <div class="flex flex-col sm:flex-row gap-5">
-        <a href="{% url 'accounts:dashboard' %}" 
-           class="bg-blue-700 hover:bg-blue-800 text-white font-black py-5 px-12 rounded-[2rem] transition-all shadow-[0_20px_40px_rgba(29,78,216,0.25)] hover:scale-105 flex items-center justify-center gap-3 group">
-            <i class="fas fa-home group-hover:-translate-y-1 transition-transform"></i>
-            RETORNAR AO DASHBOARD
+    <div class="flex flex-col sm:flex-row gap-6 mt-16 relative z-10">
+        <a href="{% url 'gamification:index' %}" 
+           class="bg-neon text-dark-950 font-black py-5 px-12 rounded-2xl transition-all shadow-[0_0_40px_rgba(0,245,160,0.3)] hover:scale-105 flex items-center justify-center gap-3 group uppercase italic tracking-tighter">
+            <i class="fas fa-terminal group-hover:translate-x-1 transition-transform"></i>
+            Reiniciar Interface
         </a>
+        
         <a href="{% url 'gamification:trail_list' %}" 
-           class="bg-white border-2 border-slate-200 hover:border-blue-500 text-slate-600 hover:text-blue-700 font-black py-5 px-12 rounded-[2rem] transition-all flex items-center justify-center gap-3">
-            EXPLORAR TRILHAS
+           class="bg-dark-800 text-white border border-white/10 hover:border-accent/50 font-black py-5 px-12 rounded-2xl transition-all flex items-center justify-center gap-3 uppercase italic tracking-tighter group">
+            <i class="fas fa-map-marked-alt group-hover:-rotate-12 transition-transform text-accent"></i>
+            Mapa de Trilhas
         </a>
+    </div>
+
+    <div class="absolute left-10 top-1/2 -translate-y-1/2 hidden xl:block">
+        <div class="text-[10px] font-mono text-slate-800 space-y-2 uppercase vertical-text">
+            <p>System.Critical_Error</p>
+            <p>Traceback_Active</p>
+            <p>Memory_Leak_Prevented</p>
+        </div>
     </div>
 </div>
 
-[Image of a custom 404 error page design for a web application]
-
 <style>
-    .animate-fadeIn { animation: fadeIn 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    .vertical-text { writing-mode: vertical-rl; transform: rotate(180deg); }
+    .animate-fadeIn { animation: fadeIn 1s ease-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
 </style>
 {% endblock %}

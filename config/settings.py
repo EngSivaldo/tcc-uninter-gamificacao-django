@@ -43,6 +43,7 @@ INSTALLED_APPS = [
 # 6. Middlewares
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware', # DEVE
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -73,15 +74,14 @@ TEMPLATES = [
 WSGI_APPLICATION = 'config.wsgi.application'
 
 # 8. Banco de Dados (PostgreSQL via .env)
+import dj_database_url
+
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('DB_NAME'),
-        'USER': os.getenv('DB_USER'),
-        'PASSWORD': os.getenv('DB_PASSWORD'),
-        'HOST': os.getenv('DB_HOST', '127.0.0.1'),
-        'PORT': os.getenv('DB_PORT', '5432'),
-    }
+    'default': dj_database_url.config(
+        # O Render fornece a URL do banco automaticamente nesta variável
+        default=os.getenv('DATABASE_URL'),
+        conn_max_age=600
+    )
 }
 
 # 9. Autenticação Customizada (Importante para o TCC)
@@ -108,10 +108,25 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
+# Otimização para o WhiteNoise servir arquivos compactados
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
 # 12. Rotas de Login/Redirecionamento
 LOGIN_URL = 'accounts:login'
-LOGIN_REDIRECT_URL = 'accounts:dashboard'
-LOGOUT_REDIRECT_URL = 'accounts:login'
+
+# O aluno loga e cai no "Porteiro Inteligente" (gamification:index)
+# que decide se mostra o 'home.html' (Continuar Estudando)
+LOGIN_REDIRECT_URL = 'gamification:index'
+
+# Ao sair, ele volta para a raiz, onde verá a sua Landing Page de vendas
+LOGOUT_REDIRECT_URL = 'gamification:index'
 
 # 13. Configurações de Campo Padrão
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+if not DEBUG:
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True

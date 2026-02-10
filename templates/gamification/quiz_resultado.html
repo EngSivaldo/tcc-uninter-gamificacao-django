@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto px-4 py-12 animate-fadeIn">
+    
+    <div class="bg-dark-800 border border-white/10 rounded-[3rem] p-10 text-center space-y-8 shadow-2xl relative overflow-hidden">
+        <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-neon to-accent"></div>
+        
+        <div class="space-y-2">
+            <h1 class="text-4xl font-black text-white uppercase italic tracking-tighter">
+                {% if percentual >= 70 %}
+                    Missão <span class="text-neon">Cumprida!</span>
+                {% else %}
+                    Análise de <span class="text-accent">Desempenho</span>
+                {% endif %}
+            </h1>
+            <p class="text-slate-400 font-medium italic">Unidade: {{ capitulo.title }}</p>
+        </div>
+
+        <div class="flex justify-center">
+            <div class="relative flex items-center justify-center w-48 h-48 rounded-full border-8 {% if percentual >= 70 %}border-neon/20{% else %}border-red-500/20{% endif %} shadow-inner bg-dark-900/50">
+                <div class="text-center">
+                    <span class="block text-6xl font-black text-white">{{ percentual }}%</span>
+                    <span class="text-slate-500 font-bold uppercase text-[10px] tracking-widest">Score Técnico</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white/5 rounded-3xl p-8 border border-white/5 backdrop-blur-sm relative overflow-hidden">
+            {% if pode_receber_pontos %}
+                <div class="absolute -top-10 -right-10 w-32 h-32 bg-neon/10 rounded-full blur-3xl"></div>
+                <p class="text-neon text-xs uppercase tracking-[0.3em] font-black mb-2 animate-pulse">Recompensa de Elite Desbloqueada!</p>
+                <div class="flex items-center justify-center gap-4 text-neon">
+                    <i class="fas fa-trophy text-3xl"></i>
+                    <span class="text-5xl font-black tracking-tighter">+{{ pontos }} XP</span>
+                </div>
+                <p class="text-slate-500 text-[10px] mt-4 uppercase font-bold tracking-widest">Você conquistou os 50% finais de XP desta aula!</p>
+            
+            {% elif ja_ganhou_pontos and percentual >= 70 %}
+                <p class="text-amber-400 text-xs uppercase tracking-[0.3em] font-black mb-2">Treinamento Concluído</p>
+                <div class="flex items-center justify-center gap-4 text-slate-500">
+                    <i class="fas fa-check-double text-2xl"></i>
+                    <span class="text-4xl font-black tracking-tighter">{{ pontos }} XP</span>
+                </div>
+                <p class="text-slate-500 text-[10px] mt-3 italic">XP de aprovação já consta em seu arsenal. Sincronia mantida em 100%.</p>
+            
+            {% elif percentual < 70 %}
+                <p class="text-red-500 text-xs uppercase tracking-[0.3em] font-black mb-2">Acesso Negado ao XP Final</p>
+                <div class="flex items-center justify-center gap-4 text-slate-600">
+                    <i class="fas fa-lock text-2xl"></i>
+                    <span class="text-4xl font-black tracking-tighter">0 XP</span>
+                </div>
+                <p class="text-red-400/60 text-[10px] mt-3 font-bold uppercase">Nota mínima de 70% necessária para os 50% de XP restantes.</p>
+            {% endif %}
+        </div>
+
+        <div class="text-left space-y-4">
+            <div class="flex items-center justify-between px-2">
+                <h3 class="text-white font-black text-sm uppercase tracking-widest opacity-50 italic">Log de Respostas</h3>
+                <span class="text-slate-500 text-[10px] font-bold">{{ acertos }}/{{ total }} ACERTOS</span>
+            </div>
+            
+            {% for res in resultados %}
+            <div class="p-6 rounded-[2rem] border transition-all {% if res.foi_correta %}bg-green-500/5 border-green-500/20{% else %}bg-red-500/5 border-red-500/20{% endif %}">
+                <div class="flex gap-4">
+                    <div class="mt-1">
+                        {% if res.foi_correta %}
+                            <i class="fas fa-check-circle text-green-500 text-xl"></i>
+                        {% else %}
+                            <i class="fas fa-times-circle text-red-500 text-xl"></i>
+                        {% endif %}
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-white font-bold mb-3 leading-tight text-sm md:text-base">{{ res.pergunta }}</p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                            <div class="bg-black/20 p-2 rounded-lg">
+                                <p class="text-[9px] uppercase text-slate-500 font-black mb-1">Sua Escolha</p>
+                                <p class="text-xs {% if res.fo_correta %}text-green-400{% else %}text-red-400{% endif %} font-bold">{{ res.escolha }}</p>
+                            </div>
+                            {% if not res.foi_correta %}
+                            <div class="bg-green-500/10 p-2 rounded-lg border border-green-500/20">
+                                <p class="text-[9px] uppercase text-green-500 font-black mb-1">Resposta Correta</p>
+                                <p class="text-xs text-green-200 font-bold">{{ res.correta }}</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="pt-6">
+            {% if percentual >= 70 %}
+                <a href="{% url 'gamification:trail_detail' capitulo.trail.id %}" 
+                   class="group block w-full bg-white hover:bg-neon text-dark-900 font-black py-6 rounded-3xl transition-all hover:scale-[1.02] active:scale-95 text-xl uppercase italic tracking-tighter shadow-xl">
+                    Próxima Missão 🚀
+                </a>
+            {% else %}
+                <a href="{% url 'gamification:exibir_quiz' capitulo.slug %}" 
+                   class="group block w-full bg-red-500 hover:bg-red-600 text-white font-black py-6 rounded-3xl transition-all hover:scale-[1.02] active:scale-95 text-xl uppercase italic tracking-tighter shadow-xl">
+                    Tentar Novamente 🔄
+                </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+    .animate-fadeIn {
+        animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(30px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+{% endblock %}

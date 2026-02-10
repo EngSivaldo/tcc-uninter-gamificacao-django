@@ -6,13 +6,17 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
 from django.db.models import Sum
 from django.db.models.functions import Coalesce
+from apps.gamification.models import UserProgress, Trail, UserMedal, PointTransaction, Chapter
+from django.utils import timezone
 
-# Importação dos modelos de gamificação
-from apps.gamification.models import UserMedal, Trail, UserProgress
+from django.db.models import Count, Q
+
+
 
 User = get_user_model()
 
-# --- 1. FORMULÁRIO DE REGISTRO COM RU ---
+
+# --- 2. FORMULÁRIO DE REGISTRO COM RU ---
 class StudentRegistrationForm(UserCreationForm):
     ru = forms.CharField(
         label='Registro Acadêmico (RU)', 
@@ -27,7 +31,7 @@ class StudentRegistrationForm(UserCreationForm):
         model = User
         fields = UserCreationForm.Meta.fields + ('ru',)
 
-# --- 2. VIEW DE REGISTRO ---
+# --- 3. VIEW DE REGISTRO ---
 def register(request):
     if request.method == 'POST':
         form = StudentRegistrationForm(request.POST)
@@ -40,51 +44,56 @@ def register(request):
         form = StudentRegistrationForm()
     return render(request, 'accounts/register.html', {'form': form})
 
+
+
+
+User = get_user_model()
+
 @login_required
 def dashboard(request):
     user = request.user
     
-    # 1. Busca capítulos concluídos (UserProgress armazena o que o aluno já fez)
-    # Corrigido: select_related('chapter') pois o modelo liga User ao Chapter
-    completed_chapters = UserProgress.objects.filter(user=user).select_related('chapter__trail')
+    # 1. Leaderboard Global (Top 5) - Mantido
+    ranking = User.objects.all().order_by('-xp')[:5] 
     
-    # 2. Leaderboard Global (Top 5)
-    # Mantendo a lógica de soma das transações para o ranking real
-    ranking = User.objects.annotate(
-        total_xp_calc=Coalesce(Sum('transactions__quantity'), 0)
-    ).order_by('-total_xp_calc')[:5]
-    
-    # 3. Estatísticas de Trilhas
-    trails = Trail.objects.all()
-    total_trails_count = trails.count()
-    
-    # Lógica para contar quantas Trilhas estão 100% completas
-    completed_trails_count = 0
-    for trail in trails:
-        total_chapters_in_trail = trail.chapters.count()
-        # Conta quantos capítulos desta trilha o usuário já concluiu
-        done_in_trail = completed_chapters.filter(chapter__trail=trail).count()
-        
-        if total_chapters_in_trail > 0 and done_in_trail == total_chapters_in_trail:
-            completed_trails_count += 1
-    
-    # 4. Cálculo de Sincronia Global (Progresso Total no Sistema)
-    total_chapters_system = sum([t.chapters.count() for t in trails])
-    if total_chapters_system > 0:
-        sincronia_global = (completed_chapters.count() / total_chapters_system) * 100
-    else:
-        sincronia_global = 0
+    # 2. Log de Operações Recentes - Mantido
+    transacoes_recentes = PointTransaction.objects.filter(
+        user=user
+    ).order_by('-created_at')[:3]
 
-    # 5. Conquistas (Medalhas)
-    conquistas = UserMedal.objects.filter(user=user).select_related('medal').order_by('-earned_at')
+    # 3. Medalhas com select_related (Ótimo para performance) - Mantido
+    conquistas = UserMedal.objects.filter(user=user).select_related('medal')
+
+    # 4. ESTATÍSTICAS OTIMIZADAS (Ponto forte para o relatório técnico)
+    # Pegamos o total de capítulos do sistema em uma única consulta
+    total_chapters_system = Chapter.objects.count()
+    
+    # Pegamos o total de capítulos que o usuário já completou
+    completed_chapters_count = UserProgress.objects.filter(user=user).count()
+    
+    # Cálculo de Sincronia Global
+    overall_progress = int((completed_chapters_count / total_chapters_system * 100)) if total_chapters_system > 0 else 0
+
+    # 5. CÁLCULO DE TRILHAS CONCLUÍDAS (Melhoria de Engenharia)
+    # Em vez de um loop manual, pedimos para o banco contar trilhas onde
+    # o número de capítulos concluídos é igual ao total de capítulos da trilha.
+    trails = Trail.objects.annotate(
+        total_ch=Count('chapters', distinct=True),
+        done_ch=Count('chapters', filter=Q(chapters__userprogress__user=user), distinct=True)
+    )
+    
+    completed_trails_count = 0
+    for t in trails:
+        if t.total_ch > 0 and t.total_ch == t.done_ch:
+            completed_trails_count += 1
 
     context = {
         'user': user,
         'ranking': ranking,
+        'overall_progress': overall_progress,
+        'transacoes_recentes': transacoes_recentes,
         'conquistas': conquistas,
-        'total_points': user.xp,      # Saldo atual do modelo User
-        'progress': sincronia_global, # Percentual para a barra de cores
-        'total_trails': total_trails_count,
+        'total_trails': trails.count(),
         'completed_trails': completed_trails_count,
     }
     
