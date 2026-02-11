@@ -9,7 +9,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # 2. Carregamento de Variáveis de Ambiente
 # Forçamos o caminho absoluto para o .env para evitar erros de leitura
-load_dotenv(os.path.join(BASE_DIR, '.env'))
+load_dotenv(os.path.join(BASE_DIR, '.env'), override=True)
+
 
 # 3. Ajuste do Path para a pasta 'apps'
 # Isso permite importar como 'accounts' em vez de 'apps.accounts' se desejar,
@@ -73,16 +74,41 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
-# 8. Banco de Dados (PostgreSQL via .env)
+
+# 8. Banco de Dados (Híbrido e Resiliente)
 import dj_database_url
 
-DATABASES = {
-    'default': dj_database_url.config(
-        # O Render fornece a URL do banco automaticamente nesta variável
-        default=os.getenv('DATABASE_URL'),
-        conn_max_age=600
-    )
-}
+# Tentamos carregar a DATABASE_URL (comum em servidores como Render/Heroku)
+database_url = os.getenv('DATABASE_URL')
+
+if database_url:
+    DATABASES = {
+        'default': dj_database_url.config(default=database_url, conn_max_age=600)
+    }
+else:
+    # Se não houver DATABASE_URL, tentamos as variáveis separadas
+    # Se o nome do banco não existir no .env, usamos o SQLite como última salvação
+    db_name = os.getenv('DB_NAME')
+    
+    if db_name:
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.postgresql',
+                'NAME': db_name,
+                'USER': os.getenv('DB_USER', 'postgres'),
+                'PASSWORD': os.getenv('DB_PASSWORD', ''),
+                'HOST': os.getenv('DB_HOST', '127.0.0.1'),
+                'PORT': os.getenv('DB_PORT', '5432'),
+            }
+        }
+    else:
+        # SALVA-VIDAS: Se nada for configurado, o projeto abre em SQLite
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.sqlite3',
+                'NAME': BASE_DIR / 'db.sqlite3',
+            }
+        }
 
 # 9. Autenticação Customizada (Importante para o TCC)
 AUTH_USER_MODEL = 'accounts.User'
