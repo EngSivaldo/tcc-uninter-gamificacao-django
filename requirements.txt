@@ -7,3 +7,4 @@ python-dotenv
 django-extensions
 google-genai
 markdown
+Pillow
