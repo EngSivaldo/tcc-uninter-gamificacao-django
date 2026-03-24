@@ -131,14 +131,44 @@ class TrailAdmin(admin.ModelAdmin):
         return obj.chapters.count()
     get_chapter_count.short_description = "Nº de Capítulos"
 
+from django.utils.html import format_html # Importe isso no topo do arquivo
+
 @admin.register(Chapter)
 class ChapterAdmin(admin.ModelAdmin):
     list_display = ('title', 'trail', 'order', 'xp_value')
     list_filter = ('trail',)
     search_fields = ('title', 'content')
     list_editable = ('order', 'xp_value')
-    # AQUI ESTÃO AS DUAS AÇÕES INTEGRADAS:
-    actions = [automatizar_conteudo, gerar_questoes_ia_action] 
+    actions = [automatizar_conteudo, gerar_questoes_ia_action]
+
+    # --- BOTÕES NO TOPO DO FORMULÁRIO ---
+    def change_view(self, request, object_id, form_url='', extra_context=None):
+        extra_context = extra_context or {}
+        # Criamos o HTML dos botões com estilo CSS direto
+        extra_context['show_save_and_add_another'] = False 
+        return super().change_view(request, object_id, form_url, extra_context=extra_context)
+
+    # Adiciona os botões na barra de ferramentas do Admin
+    def render_change_form(self, request, context, add=False, change=False, form_url='', obj=None):
+        if obj:
+            # Criamos os botões personalizados
+            context['adminform'].form.fields['title'].help_text = format_html(
+                '<div style="margin-top: 10px;">'
+                '<a class="button" style="background-color: #417690; color: white; padding: 10px; margin-right: 5px;" '
+                'href="?execute_action=gerar_texto">🤖 Gerar Texto IA</a>'
+                '<a class="button" style="background-color: #264b5d; color: white; padding: 10px;" '
+                'href="?execute_action=gerar_questoes">📝 Gerar Questões IA</a>'
+                '</div>'
+            )
+
+        # Lógica para executar a ação ao clicar no botão
+        action = request.GET.get('execute_action')
+        if action == 'gerar_texto' and obj:
+            automatizar_conteudo(self, request, [obj])
+        elif action == 'gerar_questoes' and obj:
+            gerar_questoes_ia_action(self, request, [obj])
+
+        return super().render_change_form(request, context, add, change, form_url, obj)
 
 @admin.register(Questao)
 class QuestaoAdmin(admin.ModelAdmin):
