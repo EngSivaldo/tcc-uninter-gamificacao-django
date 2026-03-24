@@ -141,27 +141,22 @@ class ChapterAdmin(admin.ModelAdmin):
     list_editable = ('order', 'xp_value')
     actions = [automatizar_conteudo, gerar_questoes_ia_action]
 
-    # --- BOTÕES NO TOPO DO FORMULÁRIO ---
-    def change_view(self, request, object_id, form_url='', extra_context=None):
-        extra_context = extra_context or {}
-        # Criamos o HTML dos botões com estilo CSS direto
-        extra_context['show_save_and_add_another'] = False 
-        return super().change_view(request, object_id, form_url, extra_context=extra_context)
-
-    # Adiciona os botões na barra de ferramentas do Admin
+    # Esta função cria os botões no topo da página de edição
     def render_change_form(self, request, context, add=False, change=False, form_url='', obj=None):
+        # Só adicionamos os botões se o objeto (aula) já existir
         if obj:
-            # Criamos os botões personalizados
+            # Injetamos o HTML dos botões no topo do formulário
             context['adminform'].form.fields['title'].help_text = format_html(
-                '<div style="margin-top: 10px;">'
-                '<a class="button" style="background-color: #417690; color: white; padding: 10px; margin-right: 5px;" '
-                'href="?execute_action=gerar_texto">🤖 Gerar Texto IA</a>'
-                '<a class="button" style="background-color: #264b5d; color: white; padding: 10px;" '
-                'href="?execute_action=gerar_questoes">📝 Gerar Questões IA</a>'
+                '<div style="background:#2c3e50; padding:15px; border-radius:8px; margin-top:10px; border:1px solid #34495e;">'
+                '<span style="color:#ecf0f1; font-weight:bold; display:block; margin-bottom:10px;">⚡ COMANDOS DE INTELIGÊNCIA ARTIFICIAL:</span>'
+                '<a class="button" style="background-color:#27ae60 !important; color:white !important; margin-right:10px; padding:8px 15px;" '
+                'href="?execute_action=gerar_texto">🤖 Gerar Texto</a>'
+                '<a class="button" style="background-color:#2980b9 !important; color:white !important; padding:8px 15px;" '
+                'href="?execute_action=gerar_questoes">📝 Gerar Questões</a>'
                 '</div>'
             )
 
-        # Lógica para executar a ação ao clicar no botão
+        # Verifica se o usuário clicou em um dos botões
         action = request.GET.get('execute_action')
         if action == 'gerar_texto' and obj:
             automatizar_conteudo(self, request, [obj])
