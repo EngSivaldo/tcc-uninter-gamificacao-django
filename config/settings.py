@@ -20,7 +20,9 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-default-change-me')
 DEBUG = os.getenv('DEBUG', 'False').strip().upper() == 'TRUE'
 
 # Adicionamos '*' para evitar o Erro 400 enquanto você configura o PC novo
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '172.29.42.229', '0.0.0.0', '*']
+# ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '172.29.42.229', '0.0.0.0', '*']
+# No seu settings.py (no VS Code)
+ALLOWED_HOSTS = ['tcc-uninter-gamificacao-django.onrender.com', '127.0.0.1', 'localhost']
 
 # 5. Definição de Aplicativos
 INSTALLED_APPS = [
