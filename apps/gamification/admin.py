@@ -131,39 +131,14 @@ class TrailAdmin(admin.ModelAdmin):
         return obj.chapters.count()
     get_chapter_count.short_description = "Nº de Capítulos"
 
-from django.utils.html import format_html # Importe isso no topo do arquivo
-
 @admin.register(Chapter)
 class ChapterAdmin(admin.ModelAdmin):
     list_display = ('title', 'trail', 'order', 'xp_value')
     list_filter = ('trail',)
     search_fields = ('title', 'content')
     list_editable = ('order', 'xp_value')
-    actions = [automatizar_conteudo, gerar_questoes_ia_action]
-
-    # --- BARRA DE BOTÕES DE IA ---
-    def render_change_form(self, request, context, add=False, change=False, form_url='', obj=None):
-        # Se o capítulo já existe, injetamos os botões no topo
-        if obj:
-            # Criamos uma mensagem de aviso que contém os botões
-            botoes_html = format_html(
-                '<div style="background:#102132; padding:15px; border-radius:8px; margin-bottom:20px; border:2px solid #27ae60;">'
-                '<span style="color:white; font-weight:bold; margin-right:20px;">🤖 FERRAMENTAS IA:</span>'
-                '<a class="button" style="background:#27ae60 !important; margin-right:10px;" href="?execute_action=gerar_texto">Gerar Texto da Aula</a>'
-                '<a class="button" style="background:#2980b9 !important;" href="?execute_action=gerar_questoes">Gerar 3 Questões</a>'
-                '</div>'
-            )
-            # Colocamos os botões no topo do formulário usando o context
-            self.message_user(request, botoes_html)
-
-        # Lógica para executar
-        action = request.GET.get('execute_action')
-        if action == 'gerar_texto' and obj:
-            automatizar_conteudo(self, request, [obj])
-        elif action == 'gerar_questoes' and obj:
-            gerar_questoes_ia_action(self, request, [obj])
-
-        return super().render_change_form(request, context, add, change, form_url, obj)
+    # AQUI ESTÃO AS DUAS AÇÕES INTEGRADAS:
+    actions = [automatizar_conteudo, gerar_questoes_ia_action] 
 
 @admin.register(Questao)
 class QuestaoAdmin(admin.ModelAdmin):
