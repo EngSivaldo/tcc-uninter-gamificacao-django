@@ -32,7 +32,8 @@ def gerar_questoes_ia_action(modeladmin, request, queryset):
     
     sucesso_count = 0
     # Sua lista de modelos testada e aprovada
-    modelos_tentar = ['gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-1.5-flash-8b']
+    # No automatizar_conteudo e no gerar_questoes_ia_action
+    modelos_tentar = ['gemini-2.0-flash', 'gemini-1.5-flash']
 
     for chapter in queryset:
         if not chapter.content:
